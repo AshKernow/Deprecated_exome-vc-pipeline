@@ -97,8 +97,8 @@ echo "" >> $TmpLog
 cat $TmpLog >> $LogFil
 
 #remove temporary files
-rm -r $TmpLog $TmpDir $TmpTar
-#if [ $RclFin -eq 24 ]; then
-	# rm $StatFil $BamFil.bam $BamFil.bai
-	# rm -r $RalDir
-#fi
+rm -r $TmpLog $TmpDir $TmpTar $RalFil
+if [ $RclFin -eq 24 ]; then
+	rm $StatFil $BamFil.bam $BamFil.bai
+	rm -r $RalDir
+fi

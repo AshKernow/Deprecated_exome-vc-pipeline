@@ -66,4 +66,4 @@ echo "" >> $TmpLog
 cat $TmpLog >> $LogFil
 
 #remove Temporary Files
-rm -r $TmpDir $TmpLog # $RclDir
+rm -r $TmpDir $TmpLog $RclDir
