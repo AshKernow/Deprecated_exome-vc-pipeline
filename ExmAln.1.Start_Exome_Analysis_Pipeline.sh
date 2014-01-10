@@ -31,6 +31,7 @@ echo "       http://gatkforums.broadinstitute.org/discussion/1317/collected-faqs
 echo "   Readgroup header should be in the general format:"
 echo "       @RG\t<tag>:<tag info>\t<tag>:<tag info>..."
 echo "        e.g @RG\tID:Sample12324.C2KDGACXX.5\tSM:Sample12324\tLB:Library1B34C\tPL:Illumina\tCN:BISRColumbia"
+echo "   First 2 fields MUST be ID then SM (sample)"
 echo "==========================================================================================="
 echo ""
 echo ""

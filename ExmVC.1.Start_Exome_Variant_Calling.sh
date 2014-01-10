@@ -14,8 +14,9 @@ echo "   The main input is a file containing a list of recalibrated BAM files fo
 echo "   The file should contain the just names of the BAM files, not the paths."
 echo "   The name of this file will be used as the job name and output name if no alternative is given."
 echo "   All BAM files should be in the same directory."
-echo "   Can files can optionally be Reduced Reads (see GATK)."
-echo ""echo "==========================================================================================="
+echo "   Files can optionally be Reduced Reads (see GATK)."
+echo ""
+echo "==========================================================================================="
 echo ""
 echo ""
 #File containing list of fastq files
@@ -115,7 +116,7 @@ echo "----------------------------------------------------------------"
 echo "   Individual sample processing logs will be recorded in $LogFil.CHR_[CHR].log"
 echo "----------------------------------------------------------------"
 #cmd="qsub -t 1:24 -pe smp $NumCores -l $vcHapCExmAlloc -N vcHapCExm.$JobNm $EXOMSCR/ExmVC.2.HaplotypeCaller.sh -i $BamLst -d $BamDir -s $Settings -l $LogFil -n $NumCores"
-cmd="qsub -t 1:4 -pe smp $NumCores -l $vcHapCExmAlloc -N vcHapCExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2.HaplotypeCaller.sh -i $BamLst -d $BamDir -s $Settings -l $LogFil"
+cmd="qsub -t 1:4 -pe smp 12 -l $vcHapCExmAlloc -N vcHapCExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2.HaplotypeCaller.sh -i $BamLst -d $BamDir -s $Settings -l $LogFil"
 echo ""
 echo "Pipeline will be initiated with the following command:"
 echo $cmd
@@ -128,10 +129,7 @@ echo "Current directory: "$PWD > $OutDir/$LogFil
 echo "Output Directory: "$Outdir >> $OutDir/$LogFil
 echo "Bam File List:"$BamLst >> $OutDir/$LogFil
 echo "Bam File Directory: "$BamDir >> $OutDir/$LogFil
-case $(/bin/hostname) in
-*.titan) echo "Running on titan with 8 threads" >> $OutDir/$LogFil;;
-*.hpc) echo "Running on hpc with 12 threads" >> $OutDir/$LogFil;;
-esac
+
 cd $OutDir
 mkdir -p stdostde/
 echo $cmd >> $LogFil

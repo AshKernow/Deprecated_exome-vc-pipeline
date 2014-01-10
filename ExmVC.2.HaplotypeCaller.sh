@@ -58,7 +58,7 @@ infofields="-A AlleleBalance -A BaseQualityRankSumTest -A Coverage -A HaplotypeS
 echo "Variant Calling with GATK HaplotypeCaller..." >> $TmpLog
 cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR  -T HaplotypeCaller -R $REF -L $Range -nct $NumCores -I $BamLstDir --genotyping_mode DISCOVERY -stand_emit_conf 10 -stand_call_conf 30 -o $VcfDir/$VcfFil $DBSNP135 --comp:HapMapV3 $HpMpV3 $infofields -rf BadCigar"
 echo $cmd >> $TmpLog
-$cmd
+# $cmd
 echo "" >> $TmpLog
 echo "Variant Calling done." >> $TmpLog
 echo "" >> $TmpLog
