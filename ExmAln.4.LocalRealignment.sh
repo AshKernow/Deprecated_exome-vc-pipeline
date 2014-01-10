@@ -4,6 +4,7 @@
 while getopts i:s:l: opt; do
   case "$opt" in
       i) BamFil="$OPTARG";;
+	  b) BamLst="$OPTARG";;
       s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
   esac
@@ -24,6 +25,7 @@ RalDir=realign.$BamFil #directory to collect individual chromosome realignments
 mkdir -p $RalDir
 StatFil=$JOB_ID.LocReal.stat #Status file to check if all chromosome are complete
 TgtFil=$RalDir/$BamFil.$Chr.target_intervals.list
+BamInp=$(cat $BamLst)
 
 #Start Log
 uname -a >> $TmpLog
@@ -36,13 +38,13 @@ echo "----------------------------------------------------------------" >> $TmpL
 #Run jobs
 #Generate target file
 echo "- Create target interval file using GATK RealignerTargetCreator `date`..." >> $TmpLog
-cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T RealignerTargetCreator -R $REF -I $BamFil.bam -L $Chr -known $INDEL -o $TgtFil -nt $NumCores"
+cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T RealignerTargetCreator -R $REF -I $BamInp -L $Chr -known $INDEL -o $TgtFil -nt $NumCores"
 echo "    "$cmd >> $TmpLog
 $cmd
 #Realign InDels
 realignedFile=$RalDir/realigned.$BamFil.Chr_$Chr.bam
 echo "- Realign InDels file using GATK IndelRealigner `date`..." >> $TmpLog
-cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T IndelRealigner -R $REF -I $BamFil.bam -targetIntervals $TgtFil -known $INDEL -o $realignedFile"
+cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T IndelRealigner -R $REF -I $BamInp -targetIntervals $TgtFil -known $INDEL -o $realignedFile"
 echo "    "$cmd >> $TmpLog
 $cmd
 echo "----------------------------------------------------------------" >> $TmpLog
