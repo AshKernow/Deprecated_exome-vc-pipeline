@@ -40,16 +40,17 @@ if [ ! -f $BamTab ]; then #check to see if file exists
 	echo $BamTab" Does not exist."
 	exit 1
 fi
+BamTab=$(readlink -f $BamTab)
 echo "   Checking for fastq files..."
 #check existence of bam files in the list
-FilList=$(cut -f1 $BamTab)#Read 1 files
+FilList=$(cut -f1 $BamTab) #Bam files
 MisFil=Missing_Fastq_files$(date '+%d%b%Yt%H%M') #Output files for list of missing files
 for i in $FilList; do #check each file
 	if [ ! -f $i ]; then #if file doesn't exist send name to output file
 		echo $i >> $MisFil
 	fi
 done
-if [ -f $MisFil ]; then #if output file is not empty
+if [ -f $MisFil ]; then #if output file exists
 	sort $MisFil | uniq > $MisFil
 	echo "   The following files do not exist in the directory."
 	cat $MisFil
@@ -94,16 +95,17 @@ if [ ! -d $OutDir ]; then #if the directory does not exist
 	echo "The directory "$OutDir" does not exist. It will be created if you proceed."
 fi
 
-#Load Settings
-. $Settings 
-#Samples to undergo joint R/R
-BamSams=$(cut -f2 $BamTab | sort | uniq)
+. $Settings #Load Settings
+
+
+BamSams=$(cut -f2 $BamTab | sort | uniq) #Unique Samples to undergo joint R/R
 
 echo "R&R Pipeline will be initiated with the following samples:"
-for i in $BamSams; do
-	echo "Sample: "$i
-	awk 
-
+for i in $BamSams; do # for each sample
+	echo "Sample: "$i #Sample 
+	echo "     Files:"
+	awk -v sampleID=$i ' $2 == sampleID { print "        "$1 }' $BamTab #associated BAM files
+done
 
 read -e -p "Proceed? y/n: " gogogo
 if [ "$gogogo" != y ]; then 
@@ -111,44 +113,44 @@ if [ "$gogogo" != y ]; then
 fi
 
 #Generate log file output directories
-LogFil="AlnExm."$JobNm$mydate".log"
+LogFil="AlnExm."$JobNm$mydate".log" #initial log files
+mkdir -p $OutDir #make output directory
+cd $OutDir  #move into output directory
+
+echo "Current directory: "$PWD > $LogFil
+echo "Output Directory: "$OutDir >> $LogFil
+echo "Bam File List:"$BamTab >> $LogFil
 AllBamsDir=$JobNm"_all_recalibrated_bams" #directory for recalibrated BAM files (gzipped)
 RrBamsDir=$JobNm"_all_RR_bams" #directory for reduced read versions of recalibrated bam files
 echo "----------------------------------------------------------------"
-echo "   Individual sample processing logs will be recorded in $LogFil.[readgroup ID].log"
+echo "   Individual samples will processed in directories with same name as the sample"
+echo "   Individual sample processing logs will be recorded in $LogFil.[sample_ID].log"
 echo "----------------------------------------------------------------"
-echo "   Final Aligned BAMs for all samples will be collected in $AllBamsDir - note these will be at the lane level"
+echo "   Final Aligned BAMs for all samples will be collected in $AllBamsDir"
 echo "   Final Aligned reduced read BAMs for all samples will be collected in $RrBamsDir"
 echo "----------------------------------------------------------------"
-
-cmd="qsub -t 1:$NFILS -pe smp $nthreads -l $mapExmAlloc -N mapExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.2.Align_BWA.sh -i $FqFil -f $FqDir -s $Settings -l $LogFil"
-
-echo ""
-
-mkdir -p $OutDir
-echo "Current directory: "$PWD > $OutDir/$LogFil
-echo "Output Directory: "$OutDir >> $OutDir/$LogFil
-echo "Fastq File List:"$FqFil >> $OutDir/$LogFil
-echo "Fastq Directory: "$FqDir >> $OutDir/$LogFil
-
-cd $OutDir
-mkdir -p stdostde/
 mkdir -p $AllBamsDir
 mkdir -p $RrBamsDir
-echo $cmd >> $LogFil
-$cmd
-echo "qsub time: `date`" >> $LogFil
-echo "" >> $LogFil
-echo "===========================================================================================" >> $LogFil
-echo "" >> $LogFil
 
-
-
-
-
-
-echo "- Call GATK realign, 1 job for each Chr `date`:" >> $LogFil
-cmd="qsub -pe smp $NumCores -t 1-24 -l $realnAlloc -N realn.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.4.LocalRealignment.sh -i $BamFil -b $BamLst -s $Settings -l $LogFil"
-echo "    "$cmd >> $LogFil
-$cmd
-echo "----------------------------------------------------------------" >> $LogFil
+for iSam in $BamSams; do #for each sample...
+	mkdir $iSam #make sample directory
+	cd $iSam # move into sample directory
+	mkdir -p stdostde/ # make standard i/o stream directory
+	SamLog=${LogFil/.log/.$iSam.log} #sample specific log file
+	cp ../$LogFil $SamLog #copy in log file
+	echo "Sample: " $iSam >> $SamLog 
+	BamLst=File_List_$iSam #log sample id
+	awk -v sampleID=$iSam ' $2 == sampleID { print "        "$1 }' $BamTab > $BamLst #generate list of BAM files for the sample
+	echo "Files: " >> $SamLog
+	cat $BamLst >> $SamLog #record list of bam files
+	echo "---------------------------" >> $SamLog
+	echo "- Call GATK realign, 1 job for each Chr `date`:" >> $SamLog
+	cmd="qsub -pe smp 12 -t 1-24 -l $realnAlloc -N realn.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.4.LocalRealignment.sh -i $iSam -b $BamLst -s $Settings -l $SamLog" #realignment command
+	echo $cmd >> $SamLog
+	$cmd
+	echo "qsub time: `date`" >> $SamLog
+	echo "" >> $SamLog
+	echo "===========================================================================================" >> $SamLog
+	echo "" >> $SamLog
+	cd ../ #move back to parent directory
+done
