@@ -26,7 +26,7 @@ ChrNm=CHR_$CHR
 if [ $CHR -le 9 ]; then
 	ChrNm=CHR_0$CHR
 fi
-TmpLog=$LogFil.LocReal.$ChrNm.log
+TmpLog=$LogFil.CallVC.$ChrNm.log
 
 uname -a >> $TmpLog
 echo "Start Variant Calling on Chromosome $CHR with GATK HaplotypeCaller - $0:`date`" >> $TmpLog

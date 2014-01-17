@@ -139,7 +139,7 @@ for iSam in $BamSams; do #for each sample...
 	SamLog=${LogFil/.log/.$iSam.log} #sample specific log file
 	cp ../$LogFil $SamLog #copy in log file
 	echo "Sample: " $iSam >> $SamLog 
-	BamLst=File_List_$iSam #log sample id
+	BamLst=File_List_$iSam.list #log sample id
 	awk -v sampleID=$iSam ' $2 == sampleID { print "        "$1 }' $BamTab > $BamLst #generate list of BAM files for the sample
 	echo "Files: " >> $SamLog
 	cat $BamLst >> $SamLog #record list of bam files

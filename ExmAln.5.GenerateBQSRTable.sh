@@ -21,12 +21,15 @@ JobNm=${JOB_NAME#*.}
 TmpDir=$BamFil.GenBQSR 
 mkdir -p $TmpDir
 RclTable=$BamFil.recal.table
-RalFils=$BamFil.realignedfile.list
-for i in $(find $RalDir/*bam); do
-    echo " -I "$i >> $RalFils
-done
-RclInputArg=$(cat $RalFils)
+#RalFils=$BamFil.realignedfile.list
+#for i in $(find $RalDir/*bam); do
+#    echo " -I "$i >> $RalFils
+#done
+#RclInputArg=$(cat $RalFils)
 #echo $RclInputArg >> $LogFil
+RalLst=$BamFil.realignedfile.list
+find $RalDir/*bam >> $RalLst
+
 
 #Start Log
 uname -a >> $LogFil
@@ -38,7 +41,7 @@ echo "----------------------------------------------------------------" >> $LogF
 #Run Jobs
 #Generate recalibration data file
 echo "- Create recalibration data file using GATK BaseRecalibrator `date`..." >> $LogFil
-cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T BaseRecalibrator -R $REF -L $TARGET $RclInputArg -knownSites $DBSNPf -knownSites $INDEL -o $RclTable -nct $NumCores"
+cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T BaseRecalibrator -R $REF -L $TARGET -I $RalLst -knownSites $DBSNPf -knownSites $INDEL -o $RclTable -nct $NumCores"
 echo "    "$cmd >> $LogFil
 $cmd
 echo "----------------------------------------------------------------" >> $LogFil
@@ -47,7 +50,7 @@ echo ""
 #Call Next Job if chain
 if [[ $ChaIn = "chain" ]]; then
 	echo "- Call Analyse Base Score Covariation with GATK `date`:" >> $LogFil
-	cmd="qsub -pe smp $NumCores -l $AnaCovAlloc -N AnaCov.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.6a.AnalyseCovariation.sh -i $BamFil -t $RclTable -f $RalFils -s $Settings -l $LogFil"
+	cmd="qsub -pe smp $NumCores -l $AnaCovAlloc -N AnaCov.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.6a.AnalyseCovariation.sh -i $BamFil -t $RclTable -r $RalLst -s $Settings -l $LogFil"
 	echo "    "$cmd  >> $LogFil
 	$cmd
 	echo "- Call Apply Base Score Recalibration with GATK `date`:" >> $LogFil

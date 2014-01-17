@@ -1,11 +1,11 @@
 #!/bin/bash
 #$ -cwd
 
-while getopts i:t:f:s:l: opt; do
+while getopts i:t:r:s:l: opt; do
   case "$opt" in
       i) BamFil="$OPTARG";;
       t) RclTable="$OPTARG";;
-      f) RalFils="$OPTARG";;
+      r) RalLst="$OPTARG";;
       s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
   esac
@@ -21,19 +21,7 @@ PostRclTable=$BamFil.post_recal.table
 RclPlot=$BamFil.recalibration_plots.pdf
 RclCsv=$BamFil.recalibration_plots.csv
 TmpLog=$LogFil.AnaCov.log
-RclInputArg=$(cat $RalFils)
-
-echo $BamFil
-echo $RclTable
-echo $RalFils
-echo $Settings
-echo $LogFil
-echo $TmpDir
-echo $PostRclTable
-echo $RclPlot
-echo $RclCsv
-echo $TmpLog
-echo $RclInputArg
+#RclInputArg=$(cat $RalFils)
 
 #Start Log
 uname -a >> $TmpLog
@@ -44,7 +32,7 @@ echo "----------------------------------------------------------------" >> $TmpL
 
 #Second pass recalibration to analyse covariation after recal
 echo "- Second pass to analyse covariation after recal using GATK BaseRecalibrator `date`..." >> $TmpLog
-cmd="$JAVA7BIN -Xmx4G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T BaseRecalibrator -R $REF -L $TARGET $RclInputArg -knownSites $DBSNP -knownSites $INDEL -BQSR $RclTable -o $PostRclTable -nct $NumCores"
+cmd="$JAVA7BIN -Xmx4G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T BaseRecalibrator -R $REF -L $TARGET -I $RalLst -knownSites $DBSNP -knownSites $INDEL -BQSR $RclTable -o $PostRclTable -nct $NumCores"
 echo "    "$cmd >> $TmpLog
 $cmd
 #Generate before and after plots

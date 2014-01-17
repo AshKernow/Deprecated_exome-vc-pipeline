@@ -56,7 +56,7 @@ echo "----------------------------------------------------------------" >> $LogF
 if [[ $ChaIn = "chain" ]]; then
 	echo "- Call GC Metrics `date`:" >> $LogFil
 	JobNm=${JOB_NAME#*.}
-	BamLst=$BamFil.filelist.temp
+	BamLst=$BamFil"_bam_files.list"
 	echo $BamFil.bam > $BamLst
 	cmd="qsub -l $GCstatAlloc -N GCstat.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.4a.GC_metrics.sh -i $BamFil -s $Settings -l $LogFil"
 	echo "    "$cmd  >> $LogFil

@@ -25,11 +25,13 @@ AllBamsDir=$(readlink -f ../$JobNm"_all_recalibrated_bams")
 RrBamsDir=$(readlink -f ../$JobNm"_all_RR_bams")
 BamFilMrg=$AllBamsDir/$BamFil.recal
 BamFilRr=$RrBamsDir/$BamFil.recal.RR
-RclFils=$BamFil.recalibratedfile.list
-for i in $(find $RclDir/*bam); do
-    echo " -I "$i >> $RclFils
-done
-MrgInputArg=$(cat $RclFils)
+#RclFils=$BamFil.recalibratedfile.list
+#for i in $(find $RclDir/*bam); do
+#    echo " -I "$i >> $RclFils
+#done
+#MrgInputArg=$(cat $RclFils)
+RclLst=$BamFil.recalibratedfile.list
+find $RclDir/*bam > $RclLst
 
 #Start Log
 uname -a >> $TmpLog
@@ -42,7 +44,7 @@ echo "----------------------------------------------------------------" >> $TmpL
 
 #Merge chromosome data
 echo "- Merge individual chromosome bam files using GATK PrintReads `date`..." >> $TmpLog
-cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T PrintReads -R $REF $MrgInputArg -o $BamFilMrg.bam"
+cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T PrintReads -R $REF -I $RclLst -o $BamFilMrg.bam"
 echo "    "$cmd >> $TmpLog
 $cmd
 
