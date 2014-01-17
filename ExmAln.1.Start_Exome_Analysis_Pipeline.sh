@@ -149,7 +149,7 @@ echo "   Final Aligned BAMs for all samples will be collected in $AllBamsDir - n
 echo "   Final Aligned reduced read BAMs for all samples will be collected in $RrBamsDir"
 echo "----------------------------------------------------------------"
 
-cmd="qsub -t 1:$NFILS -pe smp $nthreads -l $mapExmAlloc -N mapExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.2.Align_BWA.sh -i $FqFil -f $FqDir -s $Settings -l $LogFil"
+cmd="qsub -t 1:$NFILS -pe smp $nthreads -l $mapExmAlloc -N mapExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.2.Align_BWA.sh -i $FqFil -f $FqDir -s $Settings -l $LogFil -c chain"
 
 echo ""
 echo "Pipeline will be initiated with the following command:"

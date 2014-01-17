@@ -1,11 +1,14 @@
 #!/bin/bash
 #$ -cwd
 
-while getopts i:s:l: opt; do
+ChaIn="no"
+
+while getopts i:s:l:c: opt; do
   case "$opt" in
       i) SamFil="$OPTARG";;
       s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
+	  c) ChaIn="$OPTARG";;
   esac
 done
 
@@ -49,19 +52,21 @@ echo "    $SAMTOOLS idxstats $BamFil.bam > $BamFil.idxstats" >> $LogFil
 $SAMTOOLS idxstats $BamFil.bam > $BamFil.idxstats
 echo "----------------------------------------------------------------" >> $LogFil
 
-#Call Next Job
-echo "- Call GC Metrics `date`:" >> $LogFil
-JobNm=${JOB_NAME#*.}
-BamLst=$BamFil.filelist.temp
-echo $BamFil.bam > $BamLst
-cmd="qsub -l $GCstatAlloc -N GCstat.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.4a.GC_metrics.sh -i $BamFil -s $Settings -l $LogFil"
-echo "    "$cmd  >> $LogFil
-$cmd
-echo "- Call GATK realign, 1 job for each Chr `date`:" >> $LogFil
-cmd="qsub -pe smp $NumCores -t 1-24 -l $realnAlloc -N realn.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.4.LocalRealignment.sh -i $BamFil -b $BamLst -s $Settings -l $LogFil"
-echo "    "$cmd >> $LogFil
-$cmd
-echo "----------------------------------------------------------------" >> $LogFil
+#Call Next Job if chain
+if [[ $ChaIn = "chain" ]]; then
+	echo "- Call GC Metrics `date`:" >> $LogFil
+	JobNm=${JOB_NAME#*.}
+	BamLst=$BamFil.filelist.temp
+	echo $BamFil.bam > $BamLst
+	cmd="qsub -l $GCstatAlloc -N GCstat.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.4a.GC_metrics.sh -i $BamFil -s $Settings -l $LogFil"
+	echo "    "$cmd  >> $LogFil
+	$cmd
+	echo "- Call GATK realign, 1 job for each Chr `date`:" >> $LogFil
+	cmd="qsub -pe smp $NumCores -t 1-24 -l $realnAlloc -N realn.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.4.LocalRealignment.sh -i $BamFil -b $BamLst -s $Settings -l $LogFil -c chain"
+	echo "    "$cmd >> $LogFil
+	$cmd
+	echo "----------------------------------------------------------------" >> $LogFil
+fi
 
 #End Log
 echo "End Convert SAM to BAM and dedup $0:`date`" >> $LogFil

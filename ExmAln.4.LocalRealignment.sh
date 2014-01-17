@@ -1,12 +1,15 @@
 #!/bin/bash
 #$ -cwd
 
-while getopts i:b:s:l: opt; do
+ChaIn="no"
+
+while getopts i:b:s:l:c: opt; do
   case "$opt" in
       i) BamFil="$OPTARG";;
 	  b) BamLst="$OPTARG";;
       s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
+	  c) ChaIn="$OPTARG";;
   esac
 done
 
@@ -55,43 +58,45 @@ echo "    "$cmd >> $TmpLog
 $cmd
 echo "----------------------------------------------------------------" >> $TmpLog
 
-#Call next job
-#calculate an amount of time to wait based on the chromosome and the current time past the hour
-#ensures that even if all the jobs finish at the same time they will each execute the next bit of code at 5 second intervals rather than all at once
-Sekunds=`date +%-S`
-Minnits=`date +%-M`
-Minnits=$((Minnits%2))
-Minnits=$((Minnits*60))
-Sekunds=$((Sekunds+Minnits))
-CHR=$SGE_TASK_ID
-GoTime=$((CHR-1))
-GoTime=$((GoTime*5))
-WaitTime=$((GoTime-Sekunds))
-if [[ $WaitTime -lt 0 ]]; then
-WaitTime=$((120+WaitTime))
+#Call next job if chain
+if [[ $ChaIn = "chain" ]]; then
+	#calculate an amount of time to wait based on the chromosome and the current time past the hour
+	#ensures that even if all the jobs finish at the same time they will each execute the next bit of code at 5 second intervals rather than all at once
+	Sekunds=`date +%-S`
+	Minnits=`date +%-M`
+	Minnits=$((Minnits%2))
+	Minnits=$((Minnits*60))
+	Sekunds=$((Sekunds+Minnits))
+	CHR=$SGE_TASK_ID
+	GoTime=$((CHR-1))
+	GoTime=$((GoTime*5))
+	WaitTime=$((GoTime-Sekunds))
+	if [[ $WaitTime -lt 0 ]]; then
+	WaitTime=$((120+WaitTime))
+	fi
+	echo "- Check if all realigns are complete..." >> $TmpLog
+	echo " Min:Sec past hour " `date +%M:%S` >> $TmpLog
+	echo " Sleeping for "$WaitTime" seconds..." >> $TmpLog
+	sleep $WaitTime
+	#send marker to status file
+	echo $CHR >> $StatFil
+	#count markers in status file and if equals 24 call merge job
+	ralfin=$(cat $StatFil | wc -l)
+	if [ $ralfin -eq 24 ]; then
+		echo " All realigns complete at `date`" >> $TmpLog
+		echo "- Call Base Quality Score Recalibration with GATK `date`:" >> $TmpLog
+		cmd="qsub -pe smp $NumCores -l $GenBQSRAlloc -N GenBQSR.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.5.GenerateBQSRTable.sh -i $BamFil -s $Settings -d $RalDir -l $LogFil -c chain"
+		echo "    "$cmd  >> $TmpLog
+		$cmd
+	else
+		echo " Realigns Finished at `date`: $ralfin" >> $TmpLog
+		echo " Exiting..."
+		grep -vE "^/ifs" $TmpLog > $TmpLog.2
+		cat $TmpLog.2 > $TmpLog
+		rm $TmpLog.2
+	fi
+	echo "----------------------------------------------------------------" >> $LogFil
 fi
-echo "- Check if all realigns are complete..." >> $TmpLog
-echo " Min:Sec past hour " `date +%M:%S` >> $TmpLog
-echo " Sleeping for "$WaitTime" seconds..." >> $TmpLog
-sleep $WaitTime
-#send marker to status file
-echo $CHR >> $StatFil
-#count markers in status file and if equals 24 call merge job
-ralfin=$(cat $StatFil | wc -l)
-if [ $ralfin -eq 24 ]; then
-    echo " All realigns complete at `date`" >> $TmpLog
-    echo "- Call Base Quality Score Recalibration with GATK `date`:" >> $TmpLog
-    cmd="qsub -pe smp $NumCores -l $GenBQSRAlloc -N GenBQSR.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.5.GenerateBQSRTable.sh -i $BamFil -s $Settings -d $RalDir -l $LogFil"
-    echo "    "$cmd  >> $TmpLog
-    $cmd
-else
-    echo " Realigns Finished at `date`: $ralfin" >> $TmpLog
-    echo " Exiting..."
-    grep -vE "^/ifs" $TmpLog > $TmpLog.2
-    cat $TmpLog.2 > $TmpLog
-    rm $TmpLog.2
-fi
-echo "----------------------------------------------------------------" >> $LogFil
 
 #End Log
 echo "End Local Realignment of Chromosome $Chr $0:`date`" >> $TmpLog

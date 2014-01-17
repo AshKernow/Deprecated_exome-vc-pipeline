@@ -1,12 +1,15 @@
 #!/bin/bash
 #$ -cwd
 
-while getopts i:s:d:l: opt; do
+ChaIn="no"
+
+while getopts i:s:d:l:c: opt; do
   case "$opt" in
       i) BamFil="$OPTARG";;
       s) Settings="$OPTARG";;
       d) RalDir="$OPTARG";;
       l) LogFil="$OPTARG";;
+	  c) ChaIn="$OPTARG";;
   esac
 done
 
@@ -41,18 +44,18 @@ $cmd
 echo "----------------------------------------------------------------" >> $LogFil
 echo ""
 
-#Call Next Job
-echo "- Call Analyse Base Score Covariation with GATK `date`:" >> $LogFil
-cmd="qsub -pe smp $NumCores -l $AnaCovAlloc -N AnaCov.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.6a.AnalyseCovariation.sh -i $BamFil -t $RclTable -f $RalFils -s $Settings -l $LogFil"
-echo "    "$cmd  >> $LogFil
-$cmd
-
-echo "- Call Apply Base Score Recalibration with GATK `date`:" >> $LogFil
-cmd="qsub -t 1-24 -pe smp $NumCores -l $AppBQSRAlloc -N AppBQSR.$JobNm  -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.6.ApplyRecalibration.sh -i $BamFil -t $RclTable -d $RalDir -s $Settings -l $LogFil"
-echo "    "$cmd  >> $LogFil
-$cmd
-
-echo "----------------------------------------------------------------" >> $LogFil
+#Call Next Job if chain
+if [[ $ChaIn = "chain" ]]; then
+	echo "- Call Analyse Base Score Covariation with GATK `date`:" >> $LogFil
+	cmd="qsub -pe smp $NumCores -l $AnaCovAlloc -N AnaCov.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.6a.AnalyseCovariation.sh -i $BamFil -t $RclTable -f $RalFils -s $Settings -l $LogFil"
+	echo "    "$cmd  >> $LogFil
+	$cmd
+	echo "- Call Apply Base Score Recalibration with GATK `date`:" >> $LogFil
+	cmd="qsub -t 1-24 -pe smp $NumCores -l $AppBQSRAlloc -N AppBQSR.$JobNm  -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.6.ApplyRecalibration.sh -i $BamFil -t $RclTable -d $RalDir -s $Settings -l $LogFil -c chain"
+	echo "    "$cmd  >> $LogFil
+	$cmd
+	echo "----------------------------------------------------------------" >> $LogFil
+fi
 
 #End Log
 echo "End Base Quality Score Recalibration $0:`date`" >> $LogFil

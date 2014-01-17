@@ -145,7 +145,7 @@ for iSam in $BamSams; do #for each sample...
 	cat $BamLst >> $SamLog #record list of bam files
 	echo "---------------------------" >> $SamLog
 	echo "- Call GATK realign, 1 job for each Chr `date`:" >> $SamLog
-	cmd="qsub -pe smp 12 -t 1-24 -l $realnAlloc -N realn.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.4.LocalRealignment.sh -i $iSam -b $BamLst -s $Settings -l $SamLog" #realignment command
+	cmd="qsub -pe smp 12 -t 1-24 -l $realnAlloc -N realn.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.4.LocalRealignment.sh -i $iSam -b $BamLst -s $Settings -l $SamLog -c chain" #realignment command
 	echo $cmd >> $SamLog
 	$cmd
 	echo "qsub time: `date`" >> $SamLog

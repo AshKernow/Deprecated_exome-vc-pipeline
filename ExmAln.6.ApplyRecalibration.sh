@@ -1,13 +1,16 @@
 #!/bin/bash
 #$ -cwd
 
-while getopts i:t:d:s:l: opt; do
+ChaIn="no"
+
+while getopts i:t:d:s:l:c: opt; do
   case "$opt" in
       i) BamFil="$OPTARG";;
       t) RclTable="$OPTARG";;
       d) RalDir="$OPTARG";;
       s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
+	  c) ChaIn="$OPTARG";;
   esac
 done
 
@@ -49,44 +52,46 @@ $cmd
 
 echo "----------------------------------------------------------------" >> $TmpLog
 
-#Call Next Job
-#calculate an amount of time to wait based on the chromosome and the current time past the hour
-#ensures that even if all the jobs finish at the same time they will each execute the next bit of code at 5 second intervals rather than all at once
-Sekunds=`date +%-S`
-Minnits=`date +%-M`
-Minnits=$((Minnits%2))
-Minnits=$((Minnits*60))
-Sekunds=$((Sekunds+Minnits))
-Chr=${Chr/X/23}
-Chr=${Chr/Y/24}
-GoTime=$((Chr-1))
-GoTime=$((GoTime*5))
-WaitTime=$((GoTime-Sekunds))
-if [[ $WaitTime -lt 0 ]]; then
-WaitTime=$((120+WaitTime))
+#Call Next Job if chain
+if [[ $ChaIn = "chain" ]]; then
+	#calculate an amount of time to wait based on the chromosome and the current time past the hour
+	#ensures that even if all the jobs finish at the same time they will each execute the next bit of code at 5 second intervals rather than all at once
+	Sekunds=`date +%-S`
+	Minnits=`date +%-M`
+	Minnits=$((Minnits%2))
+	Minnits=$((Minnits*60))
+	Sekunds=$((Sekunds+Minnits))
+	Chr=${Chr/X/23}
+	Chr=${Chr/Y/24}
+	GoTime=$((Chr-1))
+	GoTime=$((GoTime*5))
+	WaitTime=$((GoTime-Sekunds))
+	if [[ $WaitTime -lt 0 ]]; then
+	WaitTime=$((120+WaitTime))
+	fi
+	echo "- Check if all recalibrations are complete..." >> $TmpLog
+	echo " Min:Sec past hour " `date +%M:%S` >> $TmpLog
+	echo " Sleeping for "$WaitTime" seconds..." >> $TmpLog
+	sleep $WaitTime
+	#send marker to status file
+	echo $Chr >> $StatFil
+	#count markers in status file and if equals 24 call merge job
+	RclFin=$(cat $StatFil | wc -l)
+	if [ $RclFin -eq 24 ]; then
+		echo " All recalibrations completed..." >> $TmpLog
+		echo "- Call Reduce Reads with GATK `date`:" >> $TmpLog
+		cmd="qsub -l $RRAlloc -N RR.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.7.ReduceReads.sh -i $BamFil -d $RclDir -s $Settings -l $LogFil -c chain"
+		echo "    "$cmd  >> $TmpLog
+		$cmd
+	else
+		echo " Recalibrations Finished at `date`: $RclFin" >> $TmpLog
+		echo " Exiting..."
+		grep -vE "^/ifs" $TmpLog > $TmpLog.2
+		cat $TmpLog.2 > $TmpLog
+		rm $TmpLog.2
+	fi
+	echo "----------------------------------------------------------------" >> $TmpLog
 fi
-echo "- Check if all recalibrations are complete..." >> $TmpLog
-echo " Min:Sec past hour " `date +%M:%S` >> $TmpLog
-echo " Sleeping for "$WaitTime" seconds..." >> $TmpLog
-sleep $WaitTime
-#send marker to status file
-echo $Chr >> $StatFil
-#count markers in status file and if equals 24 call merge job
-RclFin=$(cat $StatFil | wc -l)
-if [ $RclFin -eq 24 ]; then
-	echo " All recalibrations completed..." >> $TmpLog
-	echo "- Call Reduce Reads with GATK `date`:" >> $TmpLog
-	cmd="qsub -l $RRAlloc -N RR.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.7.ReduceReads.sh -i $BamFil -d $RclDir -s $Settings -l $LogFil"
-	echo "    "$cmd  >> $TmpLog
-	$cmd
-else
-	echo " Recalibrations Finished at `date`: $RclFin" >> $TmpLog
-	echo " Exiting..."
-	grep -vE "^/ifs" $TmpLog > $TmpLog.2
-	cat $TmpLog.2 > $TmpLog
-	rm $TmpLog.2
-fi
-echo "----------------------------------------------------------------" >> $TmpLog
 
 #End Log
 echo "End Apply Base Quality Score Recalibration on Chromosome $Chr $0:`date`" >> $TmpLog

@@ -1,12 +1,15 @@
 #!/bin/bash
 #$ -cwd
 
-while getopts i:d:s:l: opt; do
+ChaIn="no"
+
+while getopts i:d:s:l:c: opt; do
   case "$opt" in
       i) BamFil="$OPTARG";;
       d) RclDir="$OPTARG";;
       s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
+	  c) ChaIn="$OPTARG";;
   esac
 done
 
@@ -44,19 +47,21 @@ echo "    "$cmd >> $TmpLog
 $cmd
 
 
-#Generate recalibration data file
+#Generate reduced reads data file
 echo "- Create Reduced Reads bam file using GATK ReduceReads `date`..." >> $TmpLog
 cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T ReduceReads -R $REF -I $BamFilMrg.bam -o $BamFilRr.bam"
 echo "    "$cmd >> $TmpLog
 $cmd
 #echo "----------------------------------------------------------------" >> $TmpLog
 
-#Call Next JOb
-echo "- Call Depth of coverage `date`:" >> $TmpLog
-cmd="qsub -pe smp $NumCores -l $DepofCovAlloc -N DepofCov.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.8a.DepthofCoverage.sh -i $BamFilRr -s $Settings -l $LogFil"
-echo "    "$cmd  >> $TmpLog
-# $cmd
-echo "----------------------------------------------------------------" >> $TmpLog
+#Call Next Job if chain
+if [[ $ChaIn = "chain" ]]; then
+	echo "- Call Depth of coverage `date`:" >> $TmpLog
+	cmd="qsub -pe smp $NumCores -l $DepofCovAlloc -N DepofCov.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.8a.DepthofCoverage.sh -i $BamFilRr -s $Settings -l $LogFil"
+	echo "    "$cmd  >> $TmpLog
+	$cmd
+	echo "----------------------------------------------------------------" >> $TmpLog
+fi
 
 #End Log
 echo "End Reduce Reads with GATK $0:`date`" >> $TmpLog

@@ -10,12 +10,15 @@
 #	Settings - Global settings file
 #	LogFil - Log file
 
-while getopts i:f:s:l: opt; do
+ChaIn="no"
+
+while getopts i:f:s:l:c: opt; do
   case "$opt" in
       i) FqFil="$OPTARG";;
 	  f) FqDir="$OPTARG";;
       s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
+	  c) ChaIn="$OPTARG";;
   esac
 done
 
@@ -69,13 +72,15 @@ cd $AlignDir
 mkdir stdostde
 echo "----------------------------------------------------------------" >> $LogFil
 
-#Call next jobs
-echo "- Call Convert SAM to BAM and deduplication `date`:" >> $LogFil
-JobNm=${JOB_NAME#*.}
-cmd="qsub -l $ConvS2BAlloc -N ConvS2B.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.3.ConvSamtoBam.sh -i $rgID -s $Settings -l $LogFil"
-echo "    "$cmd  >> $LogFil
-$cmd
-echo "----------------------------------------------------------------" >> $LogFil
+#Call next jobs if chain
+if [[ $ChaIn = "chain" ]]; then
+	echo "- Call Convert SAM to BAM and deduplication `date`:" >> $LogFil
+	JobNm=${JOB_NAME#*.}
+	cmd="qsub -l $ConvS2BAlloc -N ConvS2B.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.3.ConvSamtoBam.sh -i $rgID -s $Settings -l $LogFil -c chain"
+	echo "    "$cmd  >> $LogFil
+	$cmd
+	echo "----------------------------------------------------------------" >> $LogFil
+fi
 
 #End log
 echo "End Align with BWA $0:`date`" >> $LogFil
