@@ -66,6 +66,13 @@ else
 	$BWA mem -M -t 2 -R "$rgheader" $REF $FqDir/$fastq1 > $AlignDir/$rgID.sam
 fi
 
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $LogFil
+    echo "Align with BWA mem failed `date` " >> $LogFil
+    qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID" >> $LogFil
+	exit 1
+fi
+
 #move into the Sample alignment directory
 mv $LogFil $AlignDir/$LogFil
 cd $AlignDir

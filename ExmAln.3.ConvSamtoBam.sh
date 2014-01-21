@@ -32,17 +32,35 @@ echo "- Convert SAM to BAM and reorder using PICARD `date`..."  >> $LogFil
 cmd="$JAVA7BIN -Xmx4G -Djava.io.tmpdir=$TmpDir -jar $PICARD/SortSam.jar INPUT=$SamFil.sam OUTPUT=$SamFil.bam SORT_ORDER=coordinate"
 echo "    "$cmd >> $LogFil
 $cmd
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $LogFil
+    echo "Convert SAM to BAM and reorder using PICARD failed `date`" >> $LogFil
+	qstat -j $JOB_ID | grep -E "usage" >> $LogFil
+    exit 1
+fi
 #Mark the duplicates
 echo "- Mark PCR Duplicates using PICARD `date`..." >> $LogFil
 BamFil=$SamFil.dedup
 cmd="$JAVA7BIN -Xmx4G -Djava.io.tmpdir=$TmpDir -jar $PICARD/MarkDuplicates.jar INPUT=$SamFil.bam OUTPUT=$BamFil.bam METRICS_FILE=$SamFil.Dup.metrics.txt"
 echo "    "$cmd >> $LogFil
 $cmd
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $LogFil
+    echo "Mark PCR Duplicates using PICARD failed `date`" >> $LogFil
+	qstat -j $JOB_ID | grep -E "usage" >> $LogFil
+    exit 1
+fi
 #Index BAM file
-echo "- Index BAM file using `date`..." >> $LogFil
+echo "- Index BAM file using PICARD `date`..." >> $LogFil
 cmd="$JAVA7BIN -Xmx4G -Djava.io.tmpdir=$TmpDir -jar $PICARD/BuildBamIndex.jar INPUT=$BamFil.bam"
 echo "    "$cmd >> $LogFil
 $cmd
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $LogFil
+    echo "Index BAM file using PICARD failed `date`" >> $LogFil
+	qstat -j $JOB_ID | grep -E "usage" >> $LogFil
+    exit 1
+fi
 # raw flagstat
 echo "- Output flag stats using `date`..." >> $LogFil
 echo "    $SAMTOOLS flagstat $BamFil.bam > $BamFil.flagstat" >> $LogFil

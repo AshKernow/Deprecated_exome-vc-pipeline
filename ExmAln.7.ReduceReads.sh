@@ -47,14 +47,27 @@ echo "- Merge individual chromosome bam files using GATK PrintReads `date`..." >
 cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T PrintReads -R $REF -I $RclLst -o $BamFilMrg.bam"
 echo "    "$cmd >> $TmpLog
 $cmd
-
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $TmpLog
+    echo "Merge individual chromosome bam files using GATK PrintReads failed `date`" >> $TmpLog
+	qstat -j $JOB_ID | grep -E "usage" >> $TmpLog
+	cat $TmpLog >> $LogFil
+    exit 1
+fi
 
 #Generate reduced reads data file
 echo "- Create Reduced Reads bam file using GATK ReduceReads `date`..." >> $TmpLog
 cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T ReduceReads -R $REF -I $BamFilMrg.bam -o $BamFilRr.bam"
 echo "    "$cmd >> $TmpLog
 $cmd
-#echo "----------------------------------------------------------------" >> $TmpLog
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $TmpLog
+    echo "Create Reduced Reads bam file using GATK ReduceReads failed `date`" >> $TmpLog
+	qstat -j $JOB_ID | grep -E "usage" >> $TmpLog
+	cat $TmpLog >> $LogFil
+    exit 1
+fi
+echo "----------------------------------------------------------------" >> $TmpLog
 
 #Call Next Job if chain
 if [[ $ChaIn = "chain" ]]; then

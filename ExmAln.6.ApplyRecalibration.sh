@@ -49,7 +49,13 @@ echo "- Apply recalibration data file using GATK PrintReads `date`..." >> $TmpLo
 cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T PrintReads -R $REF -I $RalFil -L $TmpTar -BQSR $RclTable -o $RclFil -nct $NumCores"
 echo "    "$cmd >> $TmpLog
 $cmd
-
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $TmpLog
+    echo "Apply recalibration data file using GATK PrintReads failed `date`" >> $TmpLog
+	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $TmpLog
+	cat $TmpLog >> $LogFil
+    exit 1
+fi
 echo "----------------------------------------------------------------" >> $TmpLog
 
 #Call Next Job if chain

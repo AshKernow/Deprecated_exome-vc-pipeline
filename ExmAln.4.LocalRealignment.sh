@@ -28,13 +28,6 @@ RalDir=realign.$BamFil #directory to collect individual chromosome realignments
 mkdir -p $RalDir
 StatFil=$JOB_ID.LocReal.stat #Status file to check if all chromosome are complete
 TgtFil=$RalDir/$BamFil.$Chr.target_intervals.list
-#TempBamLst=$BamLst.$Chr.temp
-#BamFilLst=$(cat $BamLst)
-#for i in $BamFilLst; do
-#	echo "-I "$i" " >> $TempBamLst
-#done
-#BamInp=$(cat $TempBamLst)
-#rm $TempBamLst
 
 #Start Log
 uname -a >> $TmpLog
@@ -50,12 +43,26 @@ echo "- Create target interval file using GATK RealignerTargetCreator `date`..."
 cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T RealignerTargetCreator -R $REF -I $BamLst -L $Chr -known $INDEL -o $TgtFil -nt $NumCores"
 echo "    "$cmd >> $TmpLog
 $cmd
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $TmpLog
+    echo "Create target interval file using GATK RealignerTargetCreator failed `date`" >> $TmpLog
+	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $TmpLog
+	cat $TmpLog >> $LogFil
+    exit 1
+fi
 #Realign InDels
 realignedFile=$RalDir/realigned.$BamFil.Chr_$Chr.bam
 echo "- Realign InDels file using GATK IndelRealigner `date`..." >> $TmpLog
 cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T IndelRealigner -R $REF -I $BamLst -targetIntervals $TgtFil -known $INDEL -o $realignedFile"
 echo "    "$cmd >> $TmpLog
 $cmd
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $TmpLog
+    echo "Realign InDels file using GATK IndelRealigner failed `date`" >> $TmpLog
+	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $TmpLog
+	cat $TmpLog >> $LogFil
+    exit 1
+fi
 echo "----------------------------------------------------------------" >> $TmpLog
 
 #Call next job if chain

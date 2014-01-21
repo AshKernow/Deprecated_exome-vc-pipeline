@@ -44,6 +44,12 @@ echo "- Create recalibration data file using GATK BaseRecalibrator `date`..." >>
 cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T BaseRecalibrator -R $REF -L $TARGET -I $RalLst -knownSites $DBSNPf -knownSites $INDEL -o $RclTable -nct $NumCores"
 echo "    "$cmd >> $LogFil
 $cmd
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $LogFil
+    echo "Create recalibration data file using GATK BaseRecalibrator failed `date`" >> $LogFil
+	qstat -j $JOB_ID | grep -E "usage" >> $LogFil
+    exit 1
+fi
 echo "----------------------------------------------------------------" >> $LogFil
 echo ""
 
