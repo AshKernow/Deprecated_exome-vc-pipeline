@@ -37,7 +37,6 @@ for ((i=1; i <= $JobNum; i++)); do
 done
 ###
 Range=$TmpDir/Range$JobNm$JobNum.bed #exome capture range
-echo "tail -n+$SttLn $TARGET | head -n $DivLen > $Range" >> $TmpLog
 tail -n+$SttLn $TARGET | head -n $DivLen > $Range #get exome capture range
 VcfDir=$JobNm"_VCF_final" #Output Directory
 VcfFil=$VcfDir$JobNm.$JobNum.raw_variants.vcf #Output File
@@ -63,6 +62,13 @@ $cmd
 echo "" >> $TmpLog
 echo "Variant Calling done." >> $TmpLog
 echo "" >> $TmpLog
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $TmpLog
+    echo "Variant Calling with GATK HaplotypeCaller $JOB_NAME $JOB_ID failed `date`" >> $TmpLog
+	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $TmpLog
+	cat $TmpLog >> $LogFil
+    exit 1
+fi
 
 #Need to wait for all HaplotypeCaller jobs to finish and then remerge all the vcfs
 #calculate an amount of time to wait based on the chromosome and the current time past the hour
@@ -93,11 +99,11 @@ if [ $VCsrunning -eq 1 ]; then
 	echo ""
 	cmd="qsub -l $RmgVCFAlloc -N RmgVCF.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.3.MergeVCF.sh -d $VcfDir -s $Settings -l $LogFil"
 	echo $cmd  >> $TmpLog
-	# $cmd
+	$cmd
 	echo "" >> $TmpLog
 else
 	echo "HaplotypeCallers still running: "$VCsrunning" "`date` >> $TmpLog
-	echo "Exiting..."
+	echo "Exiting..." >> $TmpLog
 fi
 
 echo "End Variant Calling with GATK HaplotypeCaller on Chromosome $Chr $0:`date`" >> $TmpLog
@@ -107,4 +113,4 @@ echo "" >> $TmpLog
 echo "===========================================================================================" >> $TmpLog
 echo "" >> $TmpLog
 cat $TmpLog >> $LogFil
-#rm -r $TmpLog $TmpDir
+rm -r $TmpLog $TmpDir
