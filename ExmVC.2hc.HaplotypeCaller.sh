@@ -18,6 +18,7 @@ done
 JobNum=$SGE_TASK_ID
 JobNm=${JOB_NAME#*.}
 TmpLog=$LogFil.CallVC.$JobNum.log
+TmpDir=$JobNm.$JobNum.VC 
 # The target file needs to be divided evenly between all the jobs. i.e. if the target file is 1000 lines long and there are 40 jobs, each job should have 25 lines of the target file
 # bash arithmetic division actually gives the quotient, so if there are 1010 lines and 40 jobs the division would still give 25 lines per a job and the last 10 lines would be lost
 # to compensate for this we will find the remainder (RemTar) and then add an extra line to the first $RemTar jobs
@@ -45,6 +46,8 @@ mkdir -p $VcfDir
 #Annotation fields to output into vcf files
 infofields="-A AlleleBalance -A BaseQualityRankSumTest -A Coverage -A HaplotypeScore -A HomopolymerRun -A MappingQualityRankSumTest -A MappingQualityZero -A QualByDepth -A RMSMappingQuality -A SpanningDeletions "
 
+
+#Start Log File
 uname -a >> $TmpLog
 echo "Start Variant Calling on Chromosome $CHR with GATK HaplotypeCaller - $0:`date`" >> $TmpLog
 echo "" >> $TmpLog
@@ -54,14 +57,11 @@ echo "Output Directory: "$VcfDir >> $TmpLog
 echo "Output File: "$VcfFil >> $TmpLog
 echo "Target file line range: $SttLn - $FinLn" >> $TmpLog
 
-
-TmpDir=$JobNm.$JobNum.VC 
+##Run Joint Variant Calling
 mkdir -p $TmpDir
 
-
-##Run Joint Variant Calling
 echo "Variant Calling with GATK HaplotypeCaller..." >> $TmpLog
-cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR  -T HaplotypeCaller -R $REF -L $Range -nct $NumCores -I $BamLstDir --genotyping_mode DISCOVERY -stand_emit_conf 10 -stand_call_conf 30 -o $VcfDir/$VcfFil $DBSNP135 --comp:HapMapV3 $HpMpV3 $infofields -rf BadCigar"
+cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR  -T HaplotypeCaller -R $REF -L $Range -nct $NumCores -I $BamLstDir --genotyping_mode DISCOVERY -stand_emit_conf 10 -stand_call_conf 30 -o $VcfDir/$VcfFil --dbsnp $DBSNP --comp:HapMapV3 $HpMpV3 $infofields -rf BadCigar"
 echo $cmd >> $TmpLog
 $cmd
 echo "" >> $TmpLog
