@@ -89,6 +89,12 @@ if [ ! -f $Settings ]; then
 	exit 1
 fi
 Settings=$(readlink -f $Settings)
+#Number of jobs to split VC into
+NumJobs=30
+read -e -p "How many jobs should the variant calling be split into [30]: " NumJobs
+echo "----------------------------------------------------------------"
+echo "   Variant calling will be split across $NumJobs jobs"
+echo "----------------------------------------------------------------"
 #job name
 read -e -p "Name for the variant calling job (*optional*): " JobNm
 mydate="_"$(date '+%y%m%d.%H%M')
@@ -110,13 +116,19 @@ fi
 OutDir=${OutDir%/}
 #Load Settings
 . $Settings 
+#check that there are not too many jobs for the target length
+TarLen=$(wc $TARGET)
+if [[ $NumJobs -gt $TarLen ]]; then
+	NumJobs=$TarLen
+fi
 #Generate log file and output directories
 LogFil="VCExm."$JobNm$mydate".log"
 echo "----------------------------------------------------------------"
 echo "   Individual sample processing logs will be recorded in $LogFil.CHR_[CHR].log"
 echo "----------------------------------------------------------------"
-#cmd="qsub -t 1:24 -pe smp $NumCores -l $vcHapCExmAlloc -N vcHapCExm.$JobNm $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -d $BamDir -s $Settings -l $LogFil -n $NumCores"
-cmd="qsub -t 1:4 -pe smp 12 -l $vcHapCExmAlloc -N vcHapCExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -d $BamDir -s $Settings -l $LogFil"
+#cmd="qsub -t 1:$NumJobs -pe smp $NumCores -l $vcHapCExmAlloc -N vcHapCExm.$JobNm $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -d $BamDir -s $Settings -l $LogFil -n $NumCores -j $NumJobs"
+#cmd="qsub -t 1:4 -pe smp 12 -l $vcHapCExmAlloc -N vcHapCExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -d $BamDir -s $Settings -l $LogFil -j $NumJobs"
+cmd="qsub -t 1:4 -l mem=1G,time=1:: -N vcHapCExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -d $BamDir -s $Settings -l $LogFil -j $NumJobs"
 echo ""
 echo "Pipeline will be initiated with the following command:"
 echo $cmd
@@ -126,7 +138,7 @@ if [ "$gogogo" != y ]; then
 fi
 mkdir -p $OutDir
 echo "Current directory: "$PWD > $OutDir/$LogFil
-echo "Output Directory: "$Outdir >> $OutDir/$LogFil
+echo "Output Directory: "$OutDir >> $OutDir/$LogFil
 echo "Bam File List:"$BamLst >> $OutDir/$LogFil
 echo "Bam File Directory: "$BamDir >> $OutDir/$LogFil
 
