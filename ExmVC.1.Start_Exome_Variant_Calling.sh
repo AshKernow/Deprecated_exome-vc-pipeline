@@ -11,7 +11,7 @@ echo ""
 echo "Note the following requirements:"
 echo ""
 echo "   The main input is a file containing a list of recalibrated BAM files for for joint variant calling."
-echo "   The file should contain the just names of the BAM files, not the paths."
+echo "   The file should contain the FULL PATHS to the BAM files."
 echo "   The name of this file will be used as the job name and output name if no alternative is given."
 echo "   All BAM files should be in the same directory."
 echo "   Files can optionally be Reduced Reads (see GATK)."
@@ -35,37 +35,28 @@ if [ ! -f $BamLst ]; then
 fi
 echo "----------------------------------------------------------------"
 BamLst=$(readlink -f $BamLst)
+#check that the filename ends in .list if not change it
+BLext=${BamLst##*.}
+if [[ $BLext != "list" ]]; then
+	echo "Appending \".list\" to the BAM list filename for compatability with GATK."
+	echo "----------------------------------------------------------------"
+	cp $BamLst $BamLst.list
+	BamLst=$BamLst.list
+fi
 echo ""
-#Directory containing fastq files
-read -e -p "Directory containing BAM files [current_directory]: " BamDir
-echo "----------------------------------------------------------------"
-if [ ! "$BamDir" ]; then
-	BamDirnm="current"
-	BamDir=$PWD
-else
-	BamDirnm=$BamDir
-	BamDir=$(readlink -f $BamDir)
-fi
-if [ ! -d $BamDir ]; then
-	echo $BamDir" Does not exist."
-	exit 1
-fi
-BamDir=${BamDir%/}
 echo "   Checking $BamDirnm for BAM files..."
 #check directory contains all the FastQ files in the list
 FilList=$(cat $BamLst)
 MisFil=Missing_BAM_files$(date '+%d%b%Yt%H%M')
 for i in $FilList; do
-	checkFil=$BamDir/$i
+	checkFil=$i
 	if [ ! -f $checkFil ]; then
 		echo $i >> $MisFil
 	fi
 done
 if [ -f $MisFil ]; then
 	sort $MisFil | uniq > $MisFil
-	echo "   Checking $BamDirnm for BAM files..."
-	echo ""
-	echo "          ...The following files do not exist in the $BamDirnm directory:"
+	echo "          ...The following files do not exist:"
 	cat $MisFil
 	echo ""
 	echo "Exiting..."
@@ -89,9 +80,24 @@ if [ ! -f $Settings ]; then
 	exit 1
 fi
 Settings=$(readlink -f $Settings)
+#HaplotypeCaller or UnifiedGenotyper
+read -e -p "Default variant calling tool is the HaplotypeCaller, do you want to use the UnifiedGenotyped instead? y/n " VCFtest
+if [[ $VCFtest == "y" ]]; then
+	VCFTool=UG
+	echo "----------------------------------------------------------------"
+	echo "   Variant calling will be carried out using the UnifiedGenotyper"
+	echo "----------------------------------------------------------------"
+	else
+	VCFTool=HC
+	echo "----------------------------------------------------------------"
+	echo "   Variant calling will be carried out using the HaplotypeCaller"
+	echo "----------------------------------------------------------------"
+fi
+
 #Number of jobs to split VC into
-NumJobs=30
+
 read -e -p "How many jobs should the variant calling be split into [30]: " NumJobs
+if [[ ! "$NumJobs" ]]; then NumJobs=30; fi
 echo "----------------------------------------------------------------"
 echo "   Variant calling will be split across $NumJobs jobs"
 echo "----------------------------------------------------------------"
@@ -126,10 +132,18 @@ LogFil="VCExm."$JobNm$mydate".log"
 echo "----------------------------------------------------------------"
 echo "   Individual sample processing logs will be recorded in $LogFil.CHR_[CHR].log"
 echo "----------------------------------------------------------------"
-#cmd="qsub -t 1:$NumJobs -pe smp $NumCores -l $vcHapCExmAlloc -N vcHapCExm.$JobNm $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -d $BamDir -s $Settings -l $LogFil -n $NumCores -j $NumJobs"
-#cmd="qsub -t 1:4 -pe smp 12 -l $vcHapCExmAlloc -N vcHapCExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -d $BamDir -s $Settings -l $LogFil -j $NumJobs"
-cmd="qsub -t 1:4 -l mem=1G,time=1:: -N vcHapCExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -d $BamDir -s $Settings -l $LogFil -j $NumJobs"
-echo ""
+
+#Starting the pipeline
+if [[ $VCFTool == "HC" ]]; then
+	#cmd="qsub -t 1:$NumJobs -pe smp $NumCores -l $vcHapCExmAlloc -N vcHapCExm.$JobNm $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -s $Settings -l $LogFil -n $NumCores -j $NumJobs"
+	cmd="qsub -t 1:4 -pe smp 6 -l $vcHapCExmAlloc -N vcHapCExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -s $Settings -l $LogFil -j $NumJobs"
+	#cmd="qsub -t 1:4 -l mem=1G,time=1:: -N vcHapCExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -s $Settings -l $LogFil -j $NumJobs"
+	else
+	#cmd="qsub -t 1:$NumJobs -pe smp $NumCores -l $vcUniGExmAlloc -N vcUniGExm.$JobNm $EXOMSCR/ExmVC.2ug.UnifiedGenotyper.sh -i $BamLst -s $Settings -l $LogFil -n $NumCores -j $NumJobs"
+	#cmd="qsub -t 1:4 -pe smp 6 -l $vcUniGExmAlloc -N vcUniGExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2ug.UnifiedGenotyper.sh -i $BamLst -s $Settings -l $LogFil -j $NumJobs"
+	cmd="qsub -t 1:4 -l mem=1G,time=1:: -N vcUniGExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2ug.UnifiedGenotyper.sh -i $BamLst -s $Settings -l $LogFil -j $NumJobs"
+	echo ""
+fi
 echo "Pipeline will be initiated with the following command:"
 echo $cmd
 read -e -p "Proceed? y/n: " gogogo

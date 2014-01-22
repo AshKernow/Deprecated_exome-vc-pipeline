@@ -1,10 +1,9 @@
 #!/bin/bash
 #$ -cwd 
 
-while getopts i:d:s:l:j: opt; do
+while getopts i:s:l:j: opt; do
   case "$opt" in
       i) BamLst="$OPTARG";;
-      d) BamDir="$OPTARG";;
       s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
 	  j) NumJobs="$OPTARG";;
@@ -19,6 +18,7 @@ JobNum=$SGE_TASK_ID
 JobNm=${JOB_NAME#*.}
 TmpLog=$LogFil.CallVC.$JobNum.log
 TmpDir=$JobNm.$JobNum.VC 
+mkdir -p $TmpDir
 # The target file needs to be divided evenly between all the jobs. i.e. if the target file is 1000 lines long and there are 40 jobs, each job should have 25 lines of the target file
 # bash arithmetic division actually gives the quotient, so if there are 1010 lines and 40 jobs the division would still give 25 lines per a job and the last 10 lines would be lost
 # to compensate for this we will find the remainder (RemTar) and then add an extra line to the first $RemTar jobs
@@ -35,17 +35,15 @@ for ((i=1; i <= $JobNum; i++)); do
 	fi
 	FinLn=$(( FinLn + DivLen ))
 done
-Range=$TmpDir/Range$JobNum.bed #exome capture range
+###
+Range=$TmpDir/Range$JobNm$JobNum.bed #exome capture range
+echo "tail -n+$SttLn $TARGET | head -n $DivLen > $Range" >> $TmpLog
 tail -n+$SttLn $TARGET | head -n $DivLen > $Range #get exome capture range
-BamLstDir=$TmpDir/$JobNm.$JobNum.bam.list #add path to file list
-awk -v x=$BamDir '{print x"/"$1}' $BamLst >> $BamLstDir
-#Output File
-VcfDir=$JobNm"_VCF_final"
-VcfFil=$VcfDir$JobNm.$JobNum.raw_variants.vcf
+VcfDir=$JobNm"_VCF_final" #Output Directory
+VcfFil=$VcfDir$JobNm.$JobNum.raw_variants.vcf #Output File
 mkdir -p $VcfDir
-#Annotation fields to output into vcf files
-infofields="-A AlleleBalance -A BaseQualityRankSumTest -A Coverage -A HaplotypeScore -A HomopolymerRun -A MappingQualityRankSumTest -A MappingQualityZero -A QualByDepth -A RMSMappingQuality -A SpanningDeletions "
 
+infofields="-A AlleleBalance -A BaseQualityRankSumTest -A Coverage -A HaplotypeScore -A HomopolymerRun -A MappingQualityRankSumTest -A MappingQualityZero -A QualByDepth -A RMSMappingQuality -A SpanningDeletions " #Annotation fields to output into vcf files
 
 #Start Log File
 uname -a >> $TmpLog
@@ -58,10 +56,8 @@ echo "Output File: "$VcfFil >> $TmpLog
 echo "Target file line range: $SttLn - $FinLn" >> $TmpLog
 
 ##Run Joint Variant Calling
-mkdir -p $TmpDir
-
 echo "Variant Calling with GATK HaplotypeCaller..." >> $TmpLog
-cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR  -T HaplotypeCaller -R $REF -L $Range -nct $NumCores -I $BamLstDir --genotyping_mode DISCOVERY -stand_emit_conf 10 -stand_call_conf 30 -o $VcfDir/$VcfFil --dbsnp $DBSNP --comp:HapMapV3 $HpMpV3 $infofields -rf BadCigar"
+cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR  -T HaplotypeCaller -R $REF -L $Range -nct $NumCores -I $BamLst --genotyping_mode DISCOVERY -stand_emit_conf 10 -stand_call_conf 30 -o $VcfDir/$VcfFil --dbsnp $DBSNP --comp:HapMapV3 $HpMpV3 $infofields -rf BadCigar"
 echo $cmd >> $TmpLog
 $cmd
 echo "" >> $TmpLog
@@ -97,7 +93,7 @@ if [ $VCsrunning -eq 1 ]; then
 	echo ""
 	cmd="qsub -l $RmgVCFAlloc -N RmgVCF.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.3.MergeVCF.sh -d $VcfDir -s $Settings -l $LogFil"
 	echo $cmd  >> $TmpLog
-	$cmd
+	# $cmd
 	echo "" >> $TmpLog
 else
 	echo "HaplotypeCallers still running: "$VCsrunning" "`date` >> $TmpLog
@@ -111,4 +107,4 @@ echo "" >> $TmpLog
 echo "===========================================================================================" >> $TmpLog
 echo "" >> $TmpLog
 cat $TmpLog >> $LogFil
-rm -r $TmpLog $TmpDir
+#rm -r $TmpLog $TmpDir
