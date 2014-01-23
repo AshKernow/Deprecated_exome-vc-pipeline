@@ -1,11 +1,12 @@
 #!/bin/bash
 #$ -cwd
 
-while getopts i:t:r:s:l: opt; do
+while getopts i:t:r:d:s:l: opt; do
   case "$opt" in
       i) BamFil="$OPTARG";;
       t) RclTable="$OPTARG";;
       r) RalLst="$OPTARG";;
+      d) RalDir="$OPTARG";;
       s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
   esac
@@ -35,13 +36,27 @@ echo "- Second pass to analyse covariation after recal using GATK BaseRecalibrat
 cmd="$JAVA7BIN -Xmx4G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T BaseRecalibrator -R $REF -L $TARGET -I $RalLst -knownSites $DBSNP -knownSites $INDEL -BQSR $RclTable -o $PostRclTable -nct $NumCores"
 echo "    "$cmd >> $TmpLog
 $cmd
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $TmpLog
+    echo "Second pass to analyse covariation after recal using GATK BaseRecalibrator failed `date`" >> $TmpLog
+	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $TmpLog
+	cat $TmpLog >> $LogFil
+    exit 1
+fi
 #Generate before and after plots
 echo "- Generate Before and After plots using GATK AnalyzeCovariates `date`..." >> $TmpLog
 cmd="$JAVA7BIN -Xmx4G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T AnalyzeCovariates -R $REF -L $TARGET -before $RclTable -after $PostRclTable -plots $RclPlot -csv $RclCsv"
 echo "    "$cmd >> $TmpLog
 $cmd
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $TmpLog
+    echo "Generate Before and After plots using GATK AnalyzeCovariates failed `date`" >> $TmpLog
+	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $TmpLog
+	cat $TmpLog >> $LogFil
+    exit 1
+fi
 echo "----------------------------------------------------------------" >> $TmpLog
-echo "----------------------------------------------------------------"
+
 
 #End Log
 echo "" >> $TmpLog
@@ -53,3 +68,8 @@ cat $TmpLog >> $LogFil
 
 #Remove temporary files
 rm -r $TmpDir $TmpLog
+if [[ -f AppRecalComplete ]]; then
+	rm -r $RalDir AppRecalComplete
+else
+	touch AnaCovComplete
+fi

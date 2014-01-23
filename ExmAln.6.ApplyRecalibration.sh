@@ -111,5 +111,10 @@ cat $TmpLog >> $LogFil
 rm -r $TmpLog $TmpDir $TmpTar $RalFil
 if [ $RclFin -eq 24 ]; then
 	rm $StatFil $BamFil.bam $BamFil.bai
-	rm -r $RalDir
+	if [[ -f AnaCovComplete ]]; then
+		rm -r $RalDir AnaCovComplete
+	else
+		touch AppRecalComplete
+	fi
 fi
+
