@@ -1,11 +1,12 @@
 #!/bin/bash
 #$ -cwd 
 
-while getopts i:s:l:j: opt; do
+while getopts i:s:l:n:j: opt; do
   case "$opt" in
       i) BamLst="$OPTARG";;
       s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
+	  n) NumCores="$OPTARG";;
 	  j) NumJobs="$OPTARG";;
   esac
 done
