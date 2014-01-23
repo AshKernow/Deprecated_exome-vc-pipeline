@@ -72,7 +72,7 @@ echo "----------------------------------------------------------------" >> $TmpL
 #Call Next Job if chain
 if [[ $ChaIn = "chain" ]]; then
 	echo "- Call Depth of coverage `date`:" >> $TmpLog
-	cmd="qsub -pe smp $NumCores -l $DepofCovAlloc -N DepofCov.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.8a.DepthofCoverage.sh -i $BamFilRr -s $Settings -l $LogFil"
+	cmd="qsub -pe smp $NumCores -l $DepofCovAlloc -N DepCov.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.8a.DepthofCoverage.sh -i $BamFilRr -s $Settings -l $LogFil"
 	echo "    "$cmd  >> $TmpLog
 	$cmd
 	echo "----------------------------------------------------------------" >> $TmpLog

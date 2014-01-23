@@ -83,7 +83,7 @@ echo "----------------------------------------------------------------" >> $LogF
 if [[ $ChaIn = "chain" ]]; then
 	echo "- Call Convert SAM to BAM and deduplication `date`:" >> $LogFil
 	JobNm=${JOB_NAME#*.}
-	cmd="qsub -l $ConvS2BAlloc -N ConvS2B.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.3.ConvSamtoBam.sh -i $rgID -s $Settings -l $LogFil -c chain"
+	cmd="qsub -l $ConvS2BAlloc -N Sm2Bm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.3.ConvSamtoBam.sh -i $rgID -s $Settings -l $LogFil -c chain"
 	echo "    "$cmd  >> $LogFil
 	$cmd
 	echo "----------------------------------------------------------------" >> $LogFil

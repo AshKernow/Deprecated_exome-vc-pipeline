@@ -92,7 +92,7 @@ if [[ $ChaIn = "chain" ]]; then
 	if [ $ralfin -eq 24 ]; then
 		echo " All realigns complete at `date`" >> $TmpLog
 		echo "- Call Base Quality Score Recalibration with GATK `date`:" >> $TmpLog
-		cmd="qsub -pe smp $NumCores -l $GenBQSRAlloc -N GenBQSR.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.5.GenerateBQSRTable.sh -i $BamFil -s $Settings -d $RalDir -l $LogFil -c chain"
+		cmd="qsub -pe smp $NumCores -l $GenBQSRAlloc -N GnBQSR.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.5.GenerateBQSRTable.sh -i $BamFil -s $Settings -d $RalDir -l $LogFil -c chain"
 		echo "    "$cmd  >> $TmpLog
 		$cmd
 	else
