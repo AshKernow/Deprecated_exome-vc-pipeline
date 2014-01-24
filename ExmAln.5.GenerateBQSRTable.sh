@@ -60,7 +60,7 @@ if [[ $ChaIn = "chain" ]]; then
 	echo "    "$cmd  >> $LogFil
 	$cmd
 	echo "- Call Apply Base Score Recalibration with GATK `date`:" >> $LogFil
-	cmd="qsub -t 1-24 -pe smp $NumCores -l $ApBQSRAlloc -N AppBQSR.$JobNm  -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.6.ApplyRecalibration.sh -i $BamFil -t $RclTable -d $RalDir -s $Settings -l $LogFil -c chain"
+	cmd="qsub -t 1-24 -pe smp $NumCores -l $AppBQSRAlloc -N ApBQSR.$JobNm  -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.6.ApplyRecalibration.sh -i $BamFil -t $RclTable -d $RalDir -s $Settings -l $LogFil -c chain"
 	echo "    "$cmd  >> $LogFil
 	$cmd
 	echo "----------------------------------------------------------------" >> $LogFil

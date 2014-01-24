@@ -28,7 +28,7 @@ export TARGET="$EXOMRES/SureSelect_Human_All_Exon_V5_UTRs_Covered.orderandbuffer
 export NumCores=6
 #Alignment scripts
 export mapExmAlloc="mem=4G,time=4::" # ExmAln.2.Align_BWA.sh - 2 or 4 cores 
-export ConvS2BAlloc="mem=8G,time=6::" # ExmAln.3.ConvSamtoBam.sh
+export ConvS2BAlloc="mem=16G,time=6::" # ExmAln.3.ConvSamtoBam.sh
 export GCstatAlloc="mem=8G,time=:45:" # ExmAln.4.GC_metrics.sh
 export realnAlloc="mem=2G,time=2::" # ExmAln.5.LocalRealignment.sh - 8 or 12 cores (depending on cluster) 
 #export RemergeAlloc="mem=1G,time=10::" # ExmAln.6.MergeBam.sh
@@ -42,7 +42,7 @@ export DepofCovAlloc="mem=2G,time=6::" # ExmAln.9.DepthofCoverage.sh - 8 or 12 c
 export vcHapCExmAlloc="mem=2G,time=12::" # ExmVC.2.HaplotypeCaller.sh - 8 or 12 cores (depending on cluster) 
 export vcUniGExmAlloc="mem=2G,time=12::" # ExmVC.2.HaplotypeCaller.sh - 8 or 12 cores (depending on cluster) 
 export RmgVCFAlloc="mem=8G,time=6::" # ExmVC.3.MergeVCF.sh
-export VQSRAlloc="mem=2G,time=24::" # ExmVC.4.RecalibrateVariantQuality.sh - 8 or 12 cores (depending on cluster) 
+export VQSRAlloc="mem=4G,time=24::" # ExmVC.4.RecalibrateVariantQuality.sh - 8 or 12 cores (depending on cluster) 
 
 #hpc workarounds
 if [[ /bin/hostname==*.hpc ]]; then 
