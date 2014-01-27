@@ -108,7 +108,7 @@ echo "" >> $TmpLog
 cat $TmpLog >> $LogFil
 
 #remove temporary files
-rm -r $TmpLog $TmpDir $TmpTar $RalFil
+rm -r $TmpLog $TmpDir $TmpTar
 if [ $RclFin -eq 24 ]; then
 	rm $StatFil $BamFil.bam $BamFil.bai
 	if [[ -f AnaCovComplete ]]; then
