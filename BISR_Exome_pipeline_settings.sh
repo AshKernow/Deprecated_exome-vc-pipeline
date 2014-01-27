@@ -39,7 +39,7 @@ export AnaCovAlloc="mem=2G,time=12::" # ExmAln.7a.ExmAln.7a.AnalyseCovariation.s
 export RRAlloc="mem=10G,time=2::" # ExmAln.8.ReduceReads.sh
 export DepofCovAlloc="mem=2G,time=6::" # ExmAln.9.DepthofCoverage.sh - 8 or 12 cores (depending on cluster) 
 #Variant Calling
-export vcHapCExmAlloc="mem=2G,time=12::" # ExmVC.2.HaplotypeCaller.sh - 8 or 12 cores (depending on cluster) 
+export vcHapCExmAlloc="mem=2G,time=18::" # ExmVC.2.HaplotypeCaller.sh - 8 or 12 cores (depending on cluster) 
 export vcUniGExmAlloc="mem=2G,time=12::" # ExmVC.2.HaplotypeCaller.sh - 8 or 12 cores (depending on cluster) 
 export RmgVCFAlloc="mem=8G,time=6::" # ExmVC.3.MergeVCF.sh
 export VQSRAlloc="mem=4G,time=24::" # ExmVC.4.RecalibrateVariantQuality.sh - 8 or 12 cores (depending on cluster) 
