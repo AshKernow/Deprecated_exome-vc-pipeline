@@ -13,8 +13,7 @@ done
 . $Settings
 
 uname -a >> $LogFil
-echo "Start Merge individual chromosome VCFs with vcftools - $0:`date`" >> $LogFil
-echo "" >> $LogFil
+echo "Start Merge & Sort individual chromosome VCFs with vcftools - $0:`date`" >> $LogFil
 echo "Job name: "$JOB_NAME >> $LogFil
 echo "Job ID: "$JOB_ID >> $LogFil
 
@@ -24,8 +23,25 @@ VcfFil=$JobNm.variants
 echo "Merged VCF file: "$VcfFil >> $LogFil
 
 #Merge files with vcftools
-echo "Starting merge..."  >> $LogFil
+echo "- Starting merge with vcftools`date` ..."  >> $LogFil
 $VCFTOOLS/vcf-concat -p $VcfDir/*vcf > $VcfFil.vcf
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $LogFil
+    echo "Merge with vcftools $JOB_NAME $JOB_ID failed `date`" >> $LogFil
+	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $LogFil
+    exit 1
+fi
+
+#Sort VCF file with vcftools
+echo "- Starting sort with vcftools `date` ..."  >> $LogFil
+cat $VcfFil.vcf | $VCFTOOLS/vcf-sort -c > $VcfFil.sorted.vcf
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $LogFil
+    echo "Sort with vcftools $JOB_NAME $JOB_ID failed `date`" >> $LogFil
+	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $LogFil
+    exit 1
+fi
+mv $VcfFil.sorted.vcf $VcfFil.vcf
 
 echo "" >> $LogFil
 echo "----------------------------------------------------------------" >> $LogFil

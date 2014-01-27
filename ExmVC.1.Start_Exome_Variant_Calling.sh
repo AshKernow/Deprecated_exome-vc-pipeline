@@ -135,11 +135,11 @@ echo "----------------------------------------------------------------"
 
 #Starting the pipeline
 if [[ $VCFTool == "HC" ]]; then
-	cmd="qsub -t 1:$NumJobs -pe smp 6 -l $vcHapCExmAlloc -N vcHapC.$JobNm $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -s $Settings -l $LogFil -n 6 -j $NumJobs"
+	cmd="qsub -t 1:$NumJobs -pe smp 6 -l $vcHapCExmAlloc -N vcHapC.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -s $Settings -l $LogFil -n 6 -j $NumJobs"
 	#cmd="qsub -t 1:4 -pe smp 6 -l $vcHapCExmAlloc -N vcHapCExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -s $Settings -l $LogFil -j $NumJobs"
 	#cmd="qsub -t 1:4 -l mem=1G,time=1:: -N vcHapCExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2hc.HaplotypeCaller.sh -i $BamLst -s $Settings -l $LogFil -j $NumJobs"
 	else
-	cmd="qsub -t 1:$NumJobs -pe smp 6 -l $vcUniGExmAlloc -N vcUniG.$JobNm $EXOMSCR/ExmVC.2ug.UnifiedGenotyper.sh -i $BamLst -s $Settings -l $LogFil -n 6 -j $NumJobs"
+	cmd="qsub -t 1:$NumJobs -pe smp 6 -l $vcUniGExmAlloc -N vcUniG.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2ug.UnifiedGenotyper.sh -i $BamLst -s $Settings -l $LogFil -n 6 -j $NumJobs"
 	#cmd="qsub -t 1:4 -pe smp 6 -l $vcUniGExmAlloc -N vcUniGExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2ug.UnifiedGenotyper.sh -i $BamLst -s $Settings -l $LogFil -n 6 -j $NumJobs"
 	#cmd="qsub -t 1:4 -l mem=1G,time=1:: -N vcUniGExm.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.2ug.UnifiedGenotyper.sh -i $BamLst -s $Settings -l $LogFil -j $NumJobs"
 	echo ""
