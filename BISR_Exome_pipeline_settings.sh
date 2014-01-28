@@ -11,6 +11,7 @@ export SAMTOOLS="$MYSRC/samtools-0.1.19/samtools" # samtools
 export PICARD="$MYSRC/picard-tools-1.101" # picard
 export VCFTOOLS="$MYSRC/vcftools_0.1.11/bin/" #vcftools
 export TABIX="$MYBIN/tabix"
+export STAMPY="$MYSRC/stampy-1.0.23/stampy.py" # stampy
 ## References
 export DBSNP="$EXOMRES/b37/dbsnp_137.b37.vcf" # dbSNP vcf from GATK
 export INDEL="$EXOMRES/b37/Mills_and_1000G_gold_standard.indels.b37.vcf" # Gold standard INDEL reference from GATK
@@ -35,7 +36,7 @@ export realnAlloc="mem=2G,time=2::" # ExmAln.5.LocalRealignment.sh - 8 or 12 cor
 #export BQSRAlloc="mem=2G,time=24::" # ExmAln.7.RecalibrateBaseQuality.sh - 8 or 12 cores (depending on cluster) 
 export GenBQSRAlloc="mem=2G,time=8::" # ExmAln.7.RecalibrateBaseQuality.sh - 8 or 12 cores (depending on cluster) 
 export AppBQSRAlloc="mem=2G,time=1::" # ExmAln.7.RecalibrateBaseQuality.sh - 8 or 12 cores (depending on cluster) 
-export AnaCovAlloc="mem=2G,time=12::" # ExmAln.7a.ExmAln.7a.AnalyseCovariation.sh- 8 or 12 cores (depending on cluster)
+export AnaCovAlloc="mem=2G,time=36::" # ExmAln.7a.ExmAln.7a.AnalyseCovariation.sh- 8 or 12 cores (depending on cluster)
 export RRAlloc="mem=10G,time=2::" # ExmAln.8.ReduceReads.sh
 export DepofCovAlloc="mem=2G,time=6::" # ExmAln.9.DepthofCoverage.sh - 8 or 12 cores (depending on cluster) 
 #Variant Calling
