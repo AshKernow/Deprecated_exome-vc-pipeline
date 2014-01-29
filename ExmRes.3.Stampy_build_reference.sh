@@ -7,13 +7,30 @@ echo "Start $0:`date`"
 echo $STAMPY
 echo $REF
 
-#build genome file
-cmd="$STAMPY -G b37 $REF"
+#build reference genome file index for Stampy
+cmd="$STAMPY -G stampy_b37 $REF"
+echo "Build genome file for Stampy"
 echo $cmd
 $cmd
-
-#build hash table
-cmd="$STAMPY -g b37 -H b37"
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $LogFil
+    echo "Build reference genome file index for Stampy failed `date`" >> $LogFil
+	qstat -j $JOB_ID | grep -E "usage" >> $LogFil
+    exit 1
+else
+	echo "Build reference genome file index for Stampy - success!"
+fi
+#build hash tablefor Stampy
+echo "Build hash tablefor Stampy"
+cmd="$STAMPY -g b37 -H stampy_b37"
 echo $cmd
 $cmd
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $LogFil
+    echo "Build hash table for Stampy failed `date`" >> $LogFil
+	qstat -j $JOB_ID | grep -E "usage" >> $LogFil
+    exit 1
+else
+	echo "Build hash table for Stampy - success!"
+fi
 echo "End $0:`date`"

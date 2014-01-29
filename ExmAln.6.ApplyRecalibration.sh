@@ -61,19 +61,19 @@ echo "----------------------------------------------------------------" >> $TmpL
 #Call Next Job if chain
 if [[ $ChaIn = "chain" ]]; then
 	#calculate an amount of time to wait based on the chromosome and the current time past the hour
-	#ensures that even if all the jobs finish at the same time they will each execute the next bit of code at 5 second intervals rather than all at once
+	#ensures that even if all the jobs finish at the same time they will each execute the next bit of code at 10 second intervals rather than all at once
 	Sekunds=`date +%-S`
 	Minnits=`date +%-M`
-	Minnits=$((Minnits%2))
+	Minnits=$((Minnits%4))
 	Minnits=$((Minnits*60))
 	Sekunds=$((Sekunds+Minnits))
 	Chr=${Chr/X/23}
 	Chr=${Chr/Y/24}
 	GoTime=$((Chr-1))
-	GoTime=$((GoTime*5))
+	GoTime=$((GoTime*10))
 	WaitTime=$((GoTime-Sekunds))
 	if [[ $WaitTime -lt 0 ]]; then
-	WaitTime=$((120+WaitTime))
+	WaitTime=$((240+WaitTime))
 	fi
 	echo "- Check if all recalibrations are complete..." >> $TmpLog
 	echo " Min:Sec past hour " `date +%M:%S` >> $TmpLog

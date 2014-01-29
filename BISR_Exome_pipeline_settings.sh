@@ -12,6 +12,9 @@ export PICARD="$MYSRC/picard-tools-1.101" # picard
 export VCFTOOLS="$MYSRC/vcftools_0.1.11/bin/" #vcftools
 export TABIX="$MYBIN/tabix"
 export STAMPY="$MYSRC/stampy-1.0.23/stampy.py" # stampy
+##Add to Path
+export PATH="$MYSRC/samtools-0.1.19:$PATH"
+
 ## References
 export DBSNP="$EXOMRES/b37/dbsnp_137.b37.vcf" # dbSNP vcf from GATK
 export INDEL="$EXOMRES/b37/Mills_and_1000G_gold_standard.indels.b37.vcf" # Gold standard INDEL reference from GATK
@@ -20,6 +23,8 @@ export HpMpV3="$EXOMRES/b37/hapmap_3.3.b37.vcf" # hapmap vcf from GATK
 export TGVCF="$EXOMRES/b37/1000G_omni2.5.b37.vcf" 
 export OneKG="$EXOMRES/b37/1000G_phase1.snps.high_confidence.b37.vcf" # 1000 genome SNPs vcf
 export TARGET="$EXOMRES/SureSelect_Human_All_Exon_V5_UTRs_Covered.orderandbuffered.bed" # Exome capture targets
+export STHSH="$EXOMRES/b37/stampy_b37" # hash file for Stampy - omit ".sthash" extension for compatibility with Stampy
+export STIDX="$EXOMRES/b37/stampy_b37" # genome index file for Stampy - omit ".stidx" extension for compatibility with Stampy
 ## Hard resource limits for ExomeAnalysis pipeline jobs
 #Number of cores dependent on Cluster
 #case $(/bin/hostname) in

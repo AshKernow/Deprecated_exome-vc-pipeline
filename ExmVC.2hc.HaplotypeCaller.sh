@@ -73,18 +73,18 @@ fi
 
 #Need to wait for all HaplotypeCaller jobs to finish and then remerge all the vcfs
 #calculate an amount of time to wait based on the chromosome and the current time past the hour
-#ensures that even if all the jobs finish at the same time they will each execute the next bit of code at 5 second intervals rather than all at once
+#ensures that even if all the jobs finish at the same time they will each execute the next bit of code at 10 second intervals rather than all at once
 Sekunds=`date +%-S`
 Minnits=`date +%-M`
 Minnits=$((Minnits*60))
 Sekunds=$((Sekunds+Minnits))
-Sekunds=$((Sekunds/5))
+Sekunds=$((Sekunds/10))
 NoTime=$((Sekunds%NumJobs))
 WaitTime=$((JobNum-NoTime))
 if [[ $WaitTime -lt 0 ]]; then
 WaitTime=$((NumJobs+WaitTime))
 fi
-WaitTime=$((WaitTime*5))
+WaitTime=$((WaitTime*10))
 echo "" >> $TmpLog
 echo "Test for completion Time:" `date +%M:%S` >> $TmpLog
 echo "Sleeping for "$WaitTime" seconds..." >> $TmpLog
