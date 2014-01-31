@@ -59,8 +59,9 @@ VcfFil=$VcfFil.recal_snps
 
 ##Build the InDel recalibration model
 echo "- Build the InDel recalibration model with GATK VariantRecalibrator `date` ..." >> $LogFil
-InfoFields="-an DP -an FS -an MQRankSum -an ReadPosRankSum -an HaplotypeScore"
-cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T VariantRecalibrator -R $REF -input $VcfFil.vcf -resource:mills,known=true,training=true,truth=true,prior=12.0 $INDEL $InfoFields -mode INDEL -tranche 100.0 -tranche 99.9 -tranche 99.0 -tranche 90.0 --maxGaussians 4 -recalFile $VcfFil.recalibrate_INDEL.recal -tranchesFile $VcfFil.recalibrate_INDEL.tranches -rscriptFile recalibrate_INDEL_plots.R -nt $NumCores"
+InfoFields="-an DP -an FS -an MQRankSum -an ReadPosRankSum"
+#InfoFields="-an DP -an FS -an ReadPosRankSum -an MQRankSum -an InbreedingCoeff" #from Badri
+cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T VariantRecalibrator -R $REF -input $VcfFil.vcf -resource:mills,known=true,training=true,truth=true,prior=12.0 $INDEL -resource:dbsnp,known=true,training=false,truth=false,prior=2.0 $DBSNP $InfoFields -mode INDEL -tranche 100.0 -tranche 99.9 -tranche 99.0 -tranche 90.0 --maxGaussians 4 -recalFile $VcfFil.recalibrate_INDEL.recal -tranchesFile $VcfFil.recalibrate_INDEL.tranches -rscriptFile recalibrate_INDEL_plots.R -nt $NumCores"
 echo $cmd >> $LogFil
 $cmd
 if [[ $? == 1 ]]; then
