@@ -28,7 +28,7 @@ RclTable=$BamFil.recal.table
 #RclInputArg=$(cat $RalFils)
 #echo $RclInputArg >> $LogFil
 RalLst=$BamFil.realignedfile.list
-find $RalDir/*bam >> $RalLst
+find $RalDir/*bam > $RalLst
 
 
 #Start Log

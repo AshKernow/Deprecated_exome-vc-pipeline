@@ -47,7 +47,7 @@ VcfDir=$JobNm"_VCF_final" #Output Directory
 VcfFil=$VcfDir$JobNm.$JobNum.raw_variants.vcf #Output File
 mkdir -p $VcfDir
 
-infofields="-A AlleleBalance -A BaseQualityRankSumTest -A Coverage -A HaplotypeScore -A HomopolymerRun -A MappingQualityRankSumTest -A MappingQualityZero -A QualByDepth -A RMSMappingQuality -A SpanningDeletions " #Annotation fields to output into vcf files
+infofields="-A AlleleBalance -A BaseQualityRankSumTest -A Coverage -A HaplotypeScore -A HomopolymerRun -A MappingQualityRankSumTest -A MappingQualityZero -A QualByDepth -A RMSMappingQuality -A SpanningDeletions" #Annotation fields to output into vcf files
 
 #Start Log File
 uname -a >> $TmpLog
@@ -63,18 +63,18 @@ echo "Target file line range: $SttLn - $FinLn" >> $TmpLog
 mkdir -p $TmpDir
 
 echo "Variant Calling with GATK UnifiedGenotyper..." >> $TmpLog
-cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR  -T UnifiedGenotyper -R $REF -L $Range -nct $NumCores -I $BamLst -stand_emit_conf 10 -stand_call_conf 30 -o $VcfDir/$VcfFil --dbsnp $DBSNP --comp:HapMapV3 $HpMpV3 $infofields -rf BadCigar"
+cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR  -T UnifiedGenotyper -R $REF -L $Range -nct $NumCores -I $BamLst -stand_emit_conf 10 -stand_call_conf 30 -o $VcfDir/$VcfFil -glm BOTH --dbsnp $DBSNP --comp:HapMapV3 $HpMpV3 $infofields -rf BadCigar"
 echo $cmd >> $TmpLog
 $cmd
-echo "" >> $TmpLog
 if [[ $? == 1 ]]; then
 	echo "----------------------------------------------------------------" >> $TmpLog
     echo "Variant Calling with GATK UnifiedGenotyper $JOB_NAME $JOB_ID failed `date`" >> $TmpLog
 	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $TmpLog
 	cat $TmpLog >> $LogFil
+	#rm $TmpLog $TmpDir
     exit 1
 fi
-
+echo "" >> $TmpLog
 echo "Variant Calling done." >> $TmpLog
 echo "" >> $TmpLog
 

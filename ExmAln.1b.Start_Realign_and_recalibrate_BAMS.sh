@@ -65,7 +65,7 @@ read -e -p "Global settings files [BISR_Exome_pipeline_settings]: " Settings
 echo "----------------------------------------------------------------"
 if [ ! "$Settings" ]; then #if no input use default global settings file
 	echo "   Using BISR_Exome_pipeline_settings"
-	Settings="/ifs/home/c2b2/af_lab/ads2202/scratch/Exome_Seq/resources/BISR_Exome_pipeline_settings.sh"
+	Settings="/ifs/home/c2b2/af_lab/ads2202/scratch/Exome_Seq/scripts/BISR_pipeline_scripts/BISR_Exome_pipeline_settings.sh"
 	echo "----------------------------------------------------------------"
 fi
 if [ ! -f $Settings ]; then #check the global settings file exists
@@ -140,12 +140,12 @@ for iSam in $BamSams; do #for each sample...
 	cp ../$LogFil $SamLog #copy in log file
 	echo "Sample: " $iSam >> $SamLog 
 	BamLst=File_List_$iSam.list #log sample id
-	awk -v sampleID=$iSam ' $2 == sampleID { print "        "$1 }' $BamTab > $BamLst #generate list of BAM files for the sample
+	awk -v sampleID=$iSam ' $2 == sampleID { print $1 }' $BamTab | grep -E "bam$" > $BamLst #generate list of BAM files for the sample
 	echo "Files: " >> $SamLog
 	cat $BamLst >> $SamLog #record list of bam files
 	echo "---------------------------" >> $SamLog
 	echo "- Call GATK realign, 1 job for each Chr `date`:" >> $SamLog
-	cmd="qsub -pe smp 12 -t 1-24 -l $realnAlloc -N realn.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.4.LocalRealignment.sh -i $iSam -b $BamLst -s $Settings -l $SamLog -c chain" #realignment command
+	cmd="qsub -pe smp $NumCores -t 1-24 -l $realnAlloc -N realn.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmAln.4.LocalRealignment.sh -i $iSam -b $BamLst -s $Settings -l $SamLog -c chain" #realignment command
 	echo $cmd >> $SamLog
 	$cmd
 	echo "qsub time: `date`" >> $SamLog
