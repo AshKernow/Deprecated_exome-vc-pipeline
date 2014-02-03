@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -l mem=1G,time=4:: -pe smp 4 -N FastQC -cwd
+#$ -l mem=4G,time=1:: -N FastQC -cwd
 
 while getopts f:o:s: opt; do
   case "$opt" in
@@ -27,4 +27,4 @@ fi
 FQFil=$(tail -n+$SGE_TASK_ID $FastQFileList | head -n 1)
 echo $FQFil
 mkdir -p $OutDir
-$FASTQC -o $OutDir -j $JAVA7BIN -t 4 $FQFil
+$FASTQC -o $OutDir -j $JAVA7BIN --noextract $FQFil
