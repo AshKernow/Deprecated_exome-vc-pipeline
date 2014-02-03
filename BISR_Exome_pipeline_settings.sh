@@ -13,6 +13,7 @@ export PICARD="$MYSRC/picard-tools-1.101" # picard
 export VCFTOOLS="$MYSRC/vcftools_0.1.11/bin/" #vcftools
 export TABIX="$MYBIN/tabix"
 export STAMPY="$MYSRC/stampy-1.0.23/stampy.py" # stampy
+export ANNDIR="/ifs/home/c2b2/af_lab/ads2202/scratch/src/annovar"
 ##Add to Path
 export PATH="$MYSRC/samtools-0.1.19:$PATH"
 
