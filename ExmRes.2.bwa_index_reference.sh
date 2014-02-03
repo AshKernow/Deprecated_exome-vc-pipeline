@@ -3,7 +3,7 @@
 uname -a
 echo "Start $0:`date`"
 
-. /ifs/home/c2b2/af_lab/ads2202/scratch/Exome_Seq/resources/BISR_Exome_pipeline_settings
+. /ifs/home/c2b2/af_lab/ads2202/scratch/Exome_Seq/scripts/BISR_pipeline_scripts/BISR_Exome_pipeline_settings
 echo $BWA
 echo $REF
 
