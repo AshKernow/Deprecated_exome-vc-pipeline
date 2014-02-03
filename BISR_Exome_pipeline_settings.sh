@@ -4,6 +4,7 @@ export EXOMRES="/ifs/home/c2b2/af_lab/ads2202/scratch/Exome_Seq/resources" # Dir
 export MYBIN="/ifs/home/c2b2/af_lab/ads2202/scratch/bin" # Directory containing software binaries
 export MYSRC="/ifs/home/c2b2/af_lab/ads2202/scratch/src" # Directory containing software sources
 ## Software/Tools
+export FASTQC="$MYBIN/FastQC/fastqc" #FASTQC perl script
 export GATKJAR="$MYSRC/GenomeAnalysisTK_Current/GenomeAnalysisTK.jar" # GATK jar file
 export JAVA7BIN="$MYBIN/jre1.7.0_40/bin/java" # java 7 binary
 export BWA="$MYSRC/bwa-0.7.5a/bwa" # bwa
