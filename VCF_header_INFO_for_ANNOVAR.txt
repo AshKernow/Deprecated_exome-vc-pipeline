@@ -1,0 +1,21 @@
+##INFO=<ID=function,Number=1,Type=String,Description="Function">
+##INFO=<ID=functionalClass,Number=1,Type=String,Description="FunctionalClass">
+##INFO=<ID=geneName,Number=1,Type=String,Description="GeneName">"
+##INFO=<ID=AAChange,Number=1,Type=String,Description="Amino Acid change as reported by Annovar">
+##INFO=<ID=1KG,Number=1,Type=Integer,Description="1KG apr2012 score as reported by Annovar">
+##INFO=<ID=dbSNP,Number=0,Type=Flag,Description="dbSNP137 membership as reported by Annovar">
+##INFO=<ID=sift.score,Number=1,Type=Integer,Description="Whole-exome SIFT score as reported by Annovar">
+##INFO=<ID=pp2hdiv.score,Number=1,Type=Integer,Description="Whole-exome PolyPhen scores built on HumanDiv database (for complex phenotypes) as reported by Annovar">
+##INFO=<ID=pp2hdiv.pred,Number=1,Type=Integer,Description="Whole-exome PolyPhen prediction built on HumanDiv database (for complex phenotypes) as reported by Annovar">
+##INFO=<ID=pp2hvar.score,Number=1,Type=Integer,Description="Whole-exome PolyPhen scores built on HumanVar database (for Mendelian phenotypes) as reported by Annovar">
+##INFO=<ID=pp2hcar.pred,Number=1,Type=Integer,Description="Whole-exome PolyPhen prediction built on HumanVar database (for Mendelian phenotypes) as reported by Annovar">
+##INFO=<ID=lrt.score,Number=1,Type=Integer,Description="Whole-exome LRT scores as reported by Annovar">
+##INFO=<ID=lrt.pred,Number=1,Type=Integer,Description="Whole-exome LRT predictions as reported by Annovar">
+##INFO=<ID=mt.score,Number=1,Type=Integer,Description="Whole-exome MutationTaster scores as reported by Annovar">
+##INFO=<ID=mt.pred,Number=1,Type=Integer,Description="Whole-exome MutationTaster predictions as reported by Annovar">
+##INFO=<ID=ma.score,Number=1,Type=Integer,Description="Whole-exome MutationAssessor scores as reported by Annovar">
+##INFO=<ID=ma.pred,Number=1,Type=Integer,Description="Whole-exome MutationAssessor predictions as reported by Annovar">
+##INFO=<ID=fathmm.score,Number=1,Type=Integer,Description="Whole-exome FATHMM scores as reported by Annovar">
+##INFO=<ID=gerp++.score,Number=1,Type=Integer,Description="Whole-exome GERP++ scores as reported by Annovar">
+##INFO=<ID=phylop.score,Number=1,Type=Integer,Description="Whole-exome PhyloP scores as reported by Annovar">
+##INFO=<ID=siphy.score,Number=1,Type=Integer,Description="Whole-exome SiPhy scores as reported by Annovar">
