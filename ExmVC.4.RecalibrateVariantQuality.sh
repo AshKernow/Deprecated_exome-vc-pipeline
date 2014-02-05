@@ -35,7 +35,7 @@ $cmd
 if [[ $? == 1 ]]; then
 	echo "----------------------------------------------------------------" >> $LogFil
     echo "Build the SNP recalibration model with GATK VariantRecalibrator $JOB_NAME $JOB_ID failed `date`" >> $LogFil
-	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $LogFil
+	qstat -j $JOB_ID | grep -E "usage " >> $LogFil
     exit 1
 fi
 echo "" >> $LogFil
@@ -49,7 +49,7 @@ $cmd
 if [[ $? == 1 ]]; then
 	echo "----------------------------------------------------------------" >> $LogFil
     echo "Apply SNP recalibration with GATK ApplyRecalibration  $JOB_NAME $JOB_ID failed `date`" >> $LogFil
-	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $LogFil
+	qstat -j $JOB_ID | grep -E "usage " >> $LogFil
     exit 1
 fi
 echo "" >> $LogFil
@@ -67,7 +67,7 @@ $cmd
 if [[ $? == 1 ]]; then
 	echo "----------------------------------------------------------------" >> $LogFil
     echo "Build the InDel recalibration model with GATK VariantRecalibrator $JOB_NAME $JOB_ID failed `date`" >> $LogFil
-	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $LogFil
+	qstat -j $JOB_ID | grep -E "usage " >> $LogFil
     exit 1
 fi
 echo "" >> $LogFil
@@ -83,13 +83,20 @@ $cmd
 if [[ $? == 1 ]]; then
 	echo "----------------------------------------------------------------" >> $LogFil
     echo "Apply InDel recalibration with GATK ApplyRecalibration $JOB_NAME $JOB_ID failed `date`" >> $LogFil
-	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $LogFil
+	qstat -j $JOB_ID | grep -E "usage " >> $LogFil
     exit 1
 fi
 echo "" >> $LogFil
 echo "InDel recalibration applied `date`" >> $LogFil
 echo "" >> $LogFil
 VcfFil=$VcfFil.recalibrated_variants
+
+#Call next job
+echo "- Call Convert for ANNOVAR `date`:" >> $TmpLog
+cmd="qsub -l $VCF2ANNAlloc -N VCF2ANN.$JobNm  -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.5.ConvertforANNOVAR.sh -i $VcfFil -s $Settings -l $LogFil"
+echo "    "$cmd  >> $TmpLog
+# $cmd
+echo "----------------------------------------------------------------" >> $TmpLog
 
 echo "" >> $LogFil
 echo "End Variant Quality Score Recalibration $0:`date`" >> $LogFil

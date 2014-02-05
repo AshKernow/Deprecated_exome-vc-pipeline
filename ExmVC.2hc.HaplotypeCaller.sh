@@ -72,7 +72,7 @@ if [[ $? == 1 ]]; then
 fi
 
 #Need to wait for all HaplotypeCaller jobs to finish and then remerge all the vcfs
-#calculate an amount of time to wait based on the chromosome and the current time past the hour
+#calculate an amount of time to wait based on the Job Number and the current time past the hour
 #ensures that even if all the jobs finish at the same time they will each execute the next bit of code at 10 second intervals rather than all at once
 Sekunds=`date +%-S`
 Minnits=`date +%-M`
