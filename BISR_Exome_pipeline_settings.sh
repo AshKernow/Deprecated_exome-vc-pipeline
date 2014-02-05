@@ -27,6 +27,7 @@ export OneKG="$EXOMRES/b37/1000G_phase1.snps.high_confidence.b37.vcf" # 1000 gen
 export TARGET="$EXOMRES/SureSelect_Human_All_Exon_V5_UTRs_Covered.orderandbuffered.bed" # Exome capture targets
 export STHSH="$EXOMRES/b37/stampy_b37" # hash file for Stampy - omit ".sthash" extension for compatibility with Stampy
 export STIDX="$EXOMRES/b37/stampy_b37" # genome index file for Stampy - omit ".stidx" extension for compatibility with Stampy
+export VCFAnnovarHeader="$EXOMSCR/VCF_header_INFO_for_ANNOVAR.txt"
 ## Hard resource limits for ExomeAnalysis pipeline jobs
 #Number of cores dependent on Cluster
 #case $(/bin/hostname) in
@@ -51,6 +52,8 @@ export vcHapCExmAlloc="mem=2G,time=18::" # ExmVC.2.HaplotypeCaller.sh - 8 or 12 
 export vcUniGExmAlloc="mem=2G,time=12::" # ExmVC.2.HaplotypeCaller.sh - 8 or 12 cores (depending on cluster) 
 export RmgVCFAlloc="mem=8G,time=6::" # ExmVC.3.MergeVCF.sh
 export VQSRAlloc="mem=4G,time=24::" # ExmVC.4.RecalibrateVariantQuality.sh - 8 or 12 cores (depending on cluster) 
+export VCF2ANNAlloc="mem=1G,time=:30:" # ExmVC.5.ConvertforANNOVAR.sh
+export AnnVCFAlloc="mem=4G,time=2::" # ExmVC.6.AnnotateVCF.sh
 
 #hpc workarounds
 if [[ /bin/hostname==*.hpc ]]; then 
