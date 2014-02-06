@@ -24,6 +24,7 @@ echo "Merged VCF file: "$VcfFil >> $LogFil
 
 #Merge files with vcftools
 echo "- Starting merge with vcftools`date` ..."  >> $LogFil
+echo "$VCFTOOLS/vcf-concat -p $VcfDir/*vcf > $VcfFil.vcf" >> $LogFil
 $VCFTOOLS/vcf-concat -p $VcfDir/*vcf > $VcfFil.vcf
 if [[ $? == 1 ]]; then
 	echo "----------------------------------------------------------------" >> $LogFil
@@ -34,6 +35,7 @@ fi
 
 #Sort VCF file with vcftools
 echo "- Starting sort with vcftools `date` ..."  >> $LogFil
+echo "cat $VcfFil.vcf | $VCFTOOLS/vcf-sort -c > $VcfFil.sorted.vcf" >> $LogFil
 cat $VcfFil.vcf | $VCFTOOLS/vcf-sort -c > $VcfFil.sorted.vcf
 if [[ $? == 1 ]]; then
 	echo "----------------------------------------------------------------" >> $LogFil
