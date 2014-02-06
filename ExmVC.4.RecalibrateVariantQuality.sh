@@ -92,11 +92,11 @@ echo "" >> $LogFil
 VcfFil=$VcfFil.recalibrated_variants
 
 #Call next job
-echo "- Call Convert for ANNOVAR `date`:" >> $TmpLog
+echo "- Call Convert for ANNOVAR `date`:" >> $LogFil
 cmd="qsub -l $VCF2ANNAlloc -N VCF2ANN.$JobNm  -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.5.ConvertforANNOVAR.sh -i $VcfFil -s $Settings -l $LogFil"
-echo "    "$cmd  >> $TmpLog
+echo "    "$cmd  >> $LogFil
 # $cmd
-echo "----------------------------------------------------------------" >> $TmpLog
+echo "----------------------------------------------------------------" >> $LogFil
 
 echo "" >> $LogFil
 echo "End Variant Quality Score Recalibration $0:`date`" >> $LogFil
