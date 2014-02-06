@@ -1,21 +1,25 @@
-##INFO=<ID=function,Number=1,Type=String,Description="Function">
-##INFO=<ID=functionalClass,Number=1,Type=String,Description="FunctionalClass">
-##INFO=<ID=geneName,Number=1,Type=String,Description="GeneName">"
-##INFO=<ID=AAChange,Number=1,Type=String,Description="Amino Acid change as reported by Annovar">
-##INFO=<ID=1KG,Number=1,Type=Integer,Description="1KG apr2012 score as reported by Annovar">
-##INFO=<ID=dbSNP,Number=0,Type=Flag,Description="dbSNP137 membership as reported by Annovar">
-##INFO=<ID=sift.score,Number=1,Type=Integer,Description="Whole-exome SIFT score as reported by Annovar">
-##INFO=<ID=pp2hdiv.score,Number=1,Type=Integer,Description="Whole-exome PolyPhen scores built on HumanDiv database (for complex phenotypes) as reported by Annovar">
-##INFO=<ID=pp2hdiv.pred,Number=1,Type=Integer,Description="Whole-exome PolyPhen prediction built on HumanDiv database (for complex phenotypes) as reported by Annovar">
-##INFO=<ID=pp2hvar.score,Number=1,Type=Integer,Description="Whole-exome PolyPhen scores built on HumanVar database (for Mendelian phenotypes) as reported by Annovar">
-##INFO=<ID=pp2hcar.pred,Number=1,Type=Integer,Description="Whole-exome PolyPhen prediction built on HumanVar database (for Mendelian phenotypes) as reported by Annovar">
-##INFO=<ID=lrt.score,Number=1,Type=Integer,Description="Whole-exome LRT scores as reported by Annovar">
-##INFO=<ID=lrt.pred,Number=1,Type=Integer,Description="Whole-exome LRT predictions as reported by Annovar">
-##INFO=<ID=mt.score,Number=1,Type=Integer,Description="Whole-exome MutationTaster scores as reported by Annovar">
-##INFO=<ID=mt.pred,Number=1,Type=Integer,Description="Whole-exome MutationTaster predictions as reported by Annovar">
-##INFO=<ID=ma.score,Number=1,Type=Integer,Description="Whole-exome MutationAssessor scores as reported by Annovar">
-##INFO=<ID=ma.pred,Number=1,Type=Integer,Description="Whole-exome MutationAssessor predictions as reported by Annovar">
-##INFO=<ID=fathmm.score,Number=1,Type=Integer,Description="Whole-exome FATHMM scores as reported by Annovar">
-##INFO=<ID=gerp++.score,Number=1,Type=Integer,Description="Whole-exome GERP++ scores as reported by Annovar">
-##INFO=<ID=phylop.score,Number=1,Type=Integer,Description="Whole-exome PhyloP scores as reported by Annovar">
-##INFO=<ID=siphy.score,Number=1,Type=Integer,Description="Whole-exome SiPhy scores as reported by Annovar">
+#File contains details of annotations to be added by ANNOVAR
+#Columns are as follow:
+#<ANNOVAR output column name> <VCF INFO ID tag> <VCF meta-information line>
+Func.refGene	function	##INFO=<ID=function,Number=1,Type=String,Description="Function">
+Gene.refGene	geneName	##INFO=<ID=geneName,Number=1,Type=String,Description="GeneName">
+ExonicFunc.refGene	functionalClass	##INFO=<ID=functionalClass,Number=1,Type=String,Description="FunctionalClass">
+AAChange.refGene	AAChange	##INFO=<ID=AAChange,Number=1,Type=String,Description="Amino Acid change as reported by Annovar">
+1000g2012apr_all	1KG	##INFO=<ID=1KG,Number=1,Type=Integer,Description="1KG apr2012 score as reported by Annovar">
+snp137	dbSNP	##INFO=<ID=dbSNP,Number=0,Type=Flag,Description="dbSNP137 membership as reported by Annovar">
+LJB2_SIFT	sift.score	##INFO=<ID=sift.score,Number=1,Type=Integer,Description="Whole-exome SIFT score as reported by Annovar">
+LJB2_PolyPhen2_HDIV	pp2hdiv.score	##INFO=<ID=pp2hdiv.score,Number=1,Type=Integer,Description="Whole-exome PolyPhen scores built on HumanDiv database (for complex phenotypes) as reported by Annovar">
+LJB2_PP2_HDIV_Pred	pp2hdiv.pred	##INFO=<ID=pp2hdiv.pred,Number=1,Type=Integer,Description="Whole-exome PolyPhen prediction built on HumanDiv database (for complex phenotypes) as reported by Annovar">
+LJB2_PolyPhen2_HVAR	pp2hvar.score	##INFO=<ID=pp2hvar.score,Number=1,Type=Integer,Description="Whole-exome PolyPhen scores built on HumanVar database (for Mendelian phenotypes) as reported by Annovar">
+LJB2_PolyPhen2_HVAR_Pred	pp2hcar.pred	##INFO=<ID=pp2hcar.pred,Number=1,Type=Integer,Description="Whole-exome PolyPhen prediction built on HumanVar database (for Mendelian phenotypes) as reported by Annovar">
+LJB2_LRT	lrt.score	##INFO=<ID=lrt.score,Number=1,Type=Integer,Description="Whole-exome LRT scores as reported by Annovar">
+LJB2_LRT_Pred	lrt.pred	##INFO=<ID=lrt.pred,Number=1,Type=Integer,Description="Whole-exome LRT predictions as reported by Annovar">
+LJB2_MutationTaster	mt.score	##INFO=<ID=mt.score,Number=1,Type=Integer,Description="Whole-exome MutationTaster scores as reported by Annovar">
+LJB2_MutationTaster_Pred	mt.pred	##INFO=<ID=mt.pred,Number=1,Type=Integer,Description="Whole-exome MutationTaster predictions as reported by Annovar">
+LJB_MutationAssessor	ma.score	##INFO=<ID=ma.score,Number=1,Type=Integer,Description="Whole-exome MutationAssessor scores as reported by Annovar">
+LJB_MutationAssessor_Pred	ma.pred	##INFO=<ID=ma.pred,Number=1,Type=Integer,Description="Whole-exome MutationAssessor predictions as reported by Annovar">
+LJB2_FATHMM	fathmm.score	##INFO=<ID=fathmm.score,Number=1,Type=Integer,Description="Whole-exome FATHMM scores as reported by Annovar">
+LJB2_GERP++	gerp++.score	##INFO=<ID=gerp++.score,Number=1,Type=Integer,Description="Whole-exome GERP++ scores as reported by Annovar">
+LJB2_PhyloP	phylop.score	##INFO=<ID=phylop.score,Number=1,Type=Integer,Description="Whole-exome PhyloP scores as reported by Annovar">
+LJB2_SiPhy	siphy.score	##INFO=<ID=siphy.score,Number=1,Type=Integer,Description="Whole-exome SiPhy scores as reported by Annovar">
+
