@@ -1,11 +1,10 @@
 #!/bin/bash
 #$ -cwd 
 
-while getopts i:d:v:s:l: opt; do
+while getopts i:d:s:l: opt; do
   case "$opt" in
       i) AnnFilLst="$OPTARG";;
 	  d) AnnFilDir="$OPTARG";;
-	  v) VcfFil="$OPTARG";;
 	  s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
   esac
@@ -28,10 +27,10 @@ OutFil=${AnnInp/.avinput/}
 
 #Start log file
 uname -a >> $TmpLog
-echo "Annotate Individual Sample VCFs using ANNOVAR - $0:`date`" >> $TmpLog
+echo "Start Annotate Individual Sample VCFs using ANNOVAR $JOB_NAME $JOB_ID - $0:`date`" >> $TmpLog
 echo "Job name: "$JOB_NAME >> $TmpLog
-echo "Job ID: "$JOB_ID >> $TmpLog
-echo "Task ID: "$JobNum >> $TmpLog
+echo "Job ID: "$JOB_ID>> $TmpLog
+echo "Task ID: $JobNum/$NumJobs"  >> $TmpLog
 echo "Input File: "$AnnInp >> $TmpLog
 
 ##Build Annotation table
@@ -46,33 +45,51 @@ if [[ $? == 1 ]]; then
 	qstat -j $JOB_ID | grep -E "usage " >> $TmpLog
     exit 1
 fi
+AnntCmd=$cmd
+AnnFil=$OutFil.hg19_multianno.txt
 rm $AnnInp.tmp
 echo "" >> $TmpLog
 echo "Built Annotation table using ANNOVAR `date`" >> $TmpLog
 echo "" >> $TmpLog
 
 ##Convert ANNOVAR format back to VCF incorporating the ANNOVAR annotations
-echo "- Convert ANNOVAR back to VCF `date` ..." >> $TmpLog
-
-
+echo "- Convert ANNOVAR back to VCF using R `date` ..." >> $TmpLog
+ #call R script with following arguments: 
+	# (1) ANNOVAR input data file used above
+	# (2) ANNOVAR annotation table generated above 
+	# (3) ANNOVAR annotation VCF meta-information INFO lines (resources)  
+	# (4) ANNOVAR command used in ExmVC.5.ConvertforANNOVAR 
+	# (5) ANNOVAR command used above to generate the annotation
+ConvCmd=$(grep convert2annovar $LogFil | tail -n1) # get (4) from log file
+cmd="Rscript $EXOMSCR/ExmVC.6R.BuildVCF.R $AnnInp $AnnFil $VCFAnnovarHeader $ConvCmd $AnntCmd"
+echo $cmd >> $TmpLog
+Rscript $EXOMSCR/ExmVC.6R.BuildVCF.R "$AnnInp" "$AnnFil" "$VCFAnnovarHeader" "$ConvCmd" "$AnntCmd"
 if [[ $? == 1 ]]; then
 	echo "----------------------------------------------------------------" >> $TmpLog
-    echo "Build Annotation table using ANNOVAR $JOB_NAME $JOB_ID failed `date`" >> $TmpLog
+    echo "Convert ANNOVAR back to VCF using R $JOB_NAME $JOB_ID failed `date`" >> $TmpLog
 	qstat -j $JOB_ID | grep -E "usage " >> $TmpLog
     exit 1
 fi
 echo "" >> $TmpLog
-echo "Built Annotation table using ANNOVAR `date`" >> $TmpLog
+echo "Converted ANNOVAR back to VCF using R `date`" >> $TmpLog
 echo "" >> $TmpLog
+VcfFil=${AnnInp/avinput/annotated.vcf}
 
-
-
-
-
-
-
-
-
+##Index the new VCF file
+echo "- Index VCF using vcftools `date` ..." >> $TmpLog
+cmd="vcftools --vcf $VcfFil"
+echo $cmd >> $TmpLog
+$cmd
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $TmpLog
+    echo "Index VCF using vcftools $JOB_NAME $JOB_ID failed `date`" >> $TmpLog
+	qstat -j $JOB_ID | grep -E "usage " >> $TmpLog
+    exit 1
+fi
+mv $VcfFil.vcfidx $VcfFil.idx
+echo "" >> $TmpLog
+echo "Indexed VCF using vcftools `date`" >> $TmpLog
+echo "" >> $TmpLog
 
 #Call next job
 #Need to wait for all Annotation jobs to finish and then remerge all the vcfs
@@ -107,12 +124,15 @@ if [ $VCsrunning -eq 1 ]; then
 	# $cmd
 	echo "" >> $TmpLog
 else
-	echo "HaplotypeCallers still running: "$VCsrunning" "`date` >> $TmpLog
+	echo "Annotate individual VCFs still running: "$VCsrunning" "`date` >> $TmpLog
 	echo "Exiting..." >> $TmpLog
 fi
 
 echo "" >> $TmpLog
-echo "End Annotate Individual Sample VCFs using ANNOVAR $0:`date`" >> $TmpLog
-qstat -j $JOB_ID | grep -E "usage " >> $TmpLog
+echo "End Annotate Individual Sample VCFs using ANNOVAR $JOB_NAME $JOB_ID $0:`date`" >> $TmpLog
+qstat -j $JOB_ID | grep -E "usage *$JobNum:" >> $TmpLog
 echo "===========================================================================================" >> $TmpLog
 echo "" >> $TmpLog
+cat $TmpLog >> $LogFil
+rm $TmpLog
+
