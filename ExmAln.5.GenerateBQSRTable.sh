@@ -41,7 +41,7 @@ echo "----------------------------------------------------------------" >> $LogF
 #Run Jobs
 #Generate recalibration data file
 echo "- Create recalibration data file using GATK BaseRecalibrator `date`..." >> $LogFil
-cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T BaseRecalibrator -R $REF -L $TARGET -I $RalLst -knownSites $DBSNPf -knownSites $INDEL -o $RclTable -nct $NumCores"
+cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T BaseRecalibrator -R $REF -L $TARGET -I $RalLst -knownSites $DBSNP -knownSites $INDEL -knownSites $INDEL1KG -o $RclTable -nct $NumCores"
 echo "    "$cmd >> $LogFil
 $cmd
 if [[ $? == 1 ]]; then
