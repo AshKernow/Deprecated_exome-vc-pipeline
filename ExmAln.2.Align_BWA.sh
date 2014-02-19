@@ -58,7 +58,7 @@ echo "----------------------------------------------------------------" >> $LogF
 #Run Jobs
 #Align using BWA mem algorithm
 echo "- Align with BWA mem `date`...">> $LogFil
-if [ $NCOL -eq 2 ]; then
+if [ $NCOL -eq 3 ]; then
 	echo "    $BWA mem -M -R \"$rgheader\" -t 4 $REF $FqDir/$fastq1 $FqDir/$fastq2 > $rgID.sam" >> $LogFil
 	$BWA mem -M -t 4 -R "$rgheader" $REF $FqDir/$fastq1 $FqDir/$fastq2 > $AlignDir/$rgID.sam
 else
