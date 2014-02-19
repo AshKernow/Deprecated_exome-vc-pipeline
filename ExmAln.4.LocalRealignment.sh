@@ -40,7 +40,7 @@ echo "----------------------------------------------------------------" >> $TmpL
 #Run jobs
 #Generate target file
 echo "- Create target interval file using GATK RealignerTargetCreator `date`..." >> $TmpLog
-cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T RealignerTargetCreator -R $REF -I $BamLst -L $Chr -known $INDEL -o $TgtFil -nt $NumCores"
+cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T RealignerTargetCreator -R $REF -I $BamLst -L $Chr -known $INDEL -known $INDEL1KG -o $TgtFil -nt $NumCores"
 echo "    "$cmd >> $TmpLog
 $cmd
 if [[ $? == 1 ]]; then
@@ -53,7 +53,7 @@ fi
 #Realign InDels
 realignedFile=$RalDir/realigned.$BamFil.Chr_$Chr.bam
 echo "- Realign InDels file using GATK IndelRealigner `date`..." >> $TmpLog
-cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T IndelRealigner -R $REF -I $BamLst -targetIntervals $TgtFil -known $INDEL -o $realignedFile"
+cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T IndelRealigner -R $REF -I $BamLst -targetIntervals $TgtFil -L $Chr -known $INDEL -known $INDEL1KG -o $realignedFile"
 echo "    "$cmd >> $TmpLog
 $cmd
 if [[ $? == 1 ]]; then
@@ -113,7 +113,7 @@ echo "" >> $TmpLog
 cat $TmpLog >> $LogFil
 
 #remove temporary files
-rm -r $TmpLog $TmpDir $TgtFil
 if [ $ralfin -eq 24 ]; then
-    rm $StatFil $BamFilLst ${BamFilLst//bam/bai}
+    rm $StatFil
 fi
+rm -r $TmpLog $TmpDir $TgtFil
