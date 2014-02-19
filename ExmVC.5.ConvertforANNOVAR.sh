@@ -45,7 +45,7 @@ echo "" >> $LogFil
 #Call next job
 echo "- Call Annotate VCF with ANNOVAR `date`:" >> $LogFil
 JobNm=${JOB_NAME#*.}
-cmd="qsub -t 1-$NumFils -l $AnnVCFAlloc -N AnnVCF.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.6.AnnotateVCF.sh -i $AnnFilLst -d $TmpDir -v $VcfFil -s $Settings -l $LogFil"
+cmd="qsub -t 1-$NumFils -l $AnnVCFAlloc -N AnnVCF.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.6.AnnotateVCF.sh -i $AnnFilLst -d $TmpDir -s $Settings -l $LogFil"
 echo "    "$cmd  >> $LogFil
 $cmd
 echo "----------------------------------------------------------------" >> $LogFil

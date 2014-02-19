@@ -23,6 +23,7 @@ AnnFilLst=$TmpDir/$TmpDir"_Files.list"
 TmpLog=$LogFil.AnnVCF.$JobNum.log
 AnnInp=$AnnFilDir/$(tail -n +$JobNum $AnnFilLst | head -n 1)
 OutFil=${AnnInp/.avinput/}
+AnnVcfLst=$AnnFilDir/Annotated_VCFs.list
 
 
 #Start log file
@@ -36,7 +37,7 @@ echo "Input File: "$AnnInp >> $TmpLog
 ##Build Annotation table
 echo "- Build Annotation table using ANNOVAR `date` ..." >> $TmpLog
 grep -vE "^#" $AnnInp > $AnnInp.tmp
-cmd="$ANNDIR/table_annovar.pl $AnnInp.tmp $ANNDIR/humandb/ --buildver hg19 --remove -protocol refGene,1000g2012apr_all,snp137,ljb2_all -operation g,f,f,f -nastring \"\" --outfile $OutFil"
+cmd="$ANNDIR/table_annovar.pl $AnnInp.tmp $ANNDIR/humandb/ --buildver hg19 --remove -protocol refGene,1000g2012apr_all,snp137,ljb2_all -operation g,f,f,f -nastring \"\"  -otherinfo --outfile $OutFil"
 echo $cmd >> $TmpLog
 $cmd
 if [[ $? == 1 ]]; then
@@ -63,7 +64,7 @@ echo "- Convert ANNOVAR back to VCF using R `date` ..." >> $TmpLog
 ConvCmd=$(grep convert2annovar $LogFil | tail -n1) # get (4) from log file
 cmd="Rscript $EXOMSCR/ExmVC.6R.BuildVCF.R $AnnInp $AnnFil $VCFAnnovarHeader $ConvCmd $AnntCmd"
 echo $cmd >> $TmpLog
-Rscript $EXOMSCR/ExmVC.6R.BuildVCF.R "$AnnInp" "$AnnFil" "$VCFAnnovarHeader" "$ConvCmd" "$AnntCmd"
+# Rscript $EXOMSCR/ExmVC.6R.BuildVCF.R "$AnnInp" "$AnnFil" "$VCFAnnovarHeader" "$ConvCmd" "$AnntCmd"
 if [[ $? == 1 ]]; then
 	echo "----------------------------------------------------------------" >> $TmpLog
     echo "Convert ANNOVAR back to VCF using R $JOB_NAME $JOB_ID failed `date`" >> $TmpLog
@@ -79,7 +80,7 @@ VcfFil=${AnnInp/avinput/annotated.vcf}
 echo "- Index VCF using vcftools `date` ..." >> $TmpLog
 cmd="vcftools --vcf $VcfFil"
 echo $cmd >> $TmpLog
-$cmd
+# $cmd
 if [[ $? == 1 ]]; then
 	echo "----------------------------------------------------------------" >> $TmpLog
     echo "Index VCF using vcftools $JOB_NAME $JOB_ID failed `date`" >> $TmpLog
@@ -119,7 +120,8 @@ if [ $VCsrunning -eq 1 ]; then
 	echo "" >> $TmpLog
 	echo "Call Merge with vcftools ...:" >> $TmpLog
 	echo ""
-	cmd="qsub -l $RmgVCFAlloc -N RmgVCF.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.3.MergeVCF.sh -d $VcfDir -s $Settings -l $LogFil"
+	find $AnnFilDir/ -type f | grep -E "vcf$" > $AnnVcfLst
+	cmd="qsub -l $RmgVCFAlloc -N MgAnV.$JobNm -o stdostde/ -e stdostde/ $EXOMSCR/ExmVC.7.MergeAnnotatedVCF.sh -i $AnnVcfLst -s $Settings -l $LogFil"
 	echo $cmd  >> $TmpLog
 	# $cmd
 	echo "" >> $TmpLog
