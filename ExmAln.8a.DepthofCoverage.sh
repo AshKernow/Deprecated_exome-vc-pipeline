@@ -17,7 +17,8 @@ TmpDir=$BamFilRr.DoC
 mkdir -p $TmpDir
 TmpLog=$LogFil.DoC.log
 JobNm=${JOB_NAME#*.}
-OutFil=$JobNm.DoC
+OutFil=$(basename $BamFilRr)
+OutFil=${OutFil%%.*}.DoC
 
 #Start Log
 uname -a >> $TmpLog
@@ -28,7 +29,7 @@ echo "----------------------------------------------------------------" >> $TmpL
 
 #Generate recalibration data file
 echo "- Calculate depth of coverage statistics using GATK DepthOfCoverage `date`..." >> $TmpLog
-cmd="$JAVA7BIN -Xmx5G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T DepthOfCoverage -R $REF -I $BamDir/$BamFilRr.bam -L $TARGET -o $OutFil -ct 1  -ct 5 -ct 10 -ct 15 -ct 20 -nt $NumCores -omitIntervals"
+cmd="$JAVA7BIN -Xmx5G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T DepthOfCoverage -R $REF -I $BamFilRr.bam -L $TARGET -o $OutFil -ct 1  -ct 5 -ct 10 -ct 15 -ct 20 -nt $NumCores -omitIntervals"
 echo "    "$cmd >> $TmpLog
 $cmd
 echo "----------------------------------------------------------------" >> $TmpLog
