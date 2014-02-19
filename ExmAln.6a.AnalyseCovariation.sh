@@ -33,7 +33,7 @@ echo "----------------------------------------------------------------" >> $TmpL
 
 #Second pass recalibration to analyse covariation after recal
 echo "- Second pass to analyse covariation after recal using GATK BaseRecalibrator `date`..." >> $TmpLog
-cmd="$JAVA7BIN -Xmx4G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T BaseRecalibrator -R $REF -L $TARGET -I $RalLst -knownSites $DBSNP -knownSites $INDEL -BQSR $RclTable -o $PostRclTable -nct $NumCores"
+cmd="$JAVA7BIN -Xmx4G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T BaseRecalibrator -R $REF -L $TARGET -I $RalLst -knownSites $DBSNP -knownSites $INDEL -knownSites $INDEL1KG -BQSR $RclTable -o $PostRclTable -nct $NumCores"
 echo "    "$cmd >> $TmpLog
 $cmd
 if [[ $? == 1 ]]; then
