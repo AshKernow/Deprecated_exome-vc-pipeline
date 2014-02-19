@@ -20,6 +20,7 @@ export PATH="$MYSRC/samtools-0.1.19:$PATH"
 ## References
 export DBSNP="$EXOMRES/b37/dbsnp_137.b37.vcf" # dbSNP vcf from GATK
 export INDEL="$EXOMRES/b37/Mills_and_1000G_gold_standard.indels.b37.vcf" # Gold standard INDEL reference from GATK
+export INDEL1KG="$EXOMRES/b37/1000G_phase1.indels.b37.vcf" # INDEL reference from 1000 genomes
 export REF="$EXOMRES/b37/human_g1k_v37.fasta" # human 1000 genome assembly from GATK
 export HpMpV3="$EXOMRES/b37/hapmap_3.3.b37.vcf" # hapmap vcf from GATK
 export TGVCF="$EXOMRES/b37/1000G_omni2.5.b37.vcf" 
@@ -38,15 +39,15 @@ export NumCores=6
 #Alignment scripts
 export mapExmAlloc="mem=4G,time=4::" # ExmAln.2.Align_BWA.sh - 2 or 4 cores 
 export ConvS2BAlloc="mem=16G,time=6::" # ExmAln.3.ConvSamtoBam.sh
-export GCstatAlloc="mem=8G,time=:45:" # ExmAln.4.GC_metrics.sh
-export realnAlloc="mem=2G,time=2::" # ExmAln.5.LocalRealignment.sh - 8 or 12 cores (depending on cluster) 
+export GCstatAlloc="mem=8G,time=2::" # ExmAln.4.GC_metrics.sh
+export realnAlloc="mem=2G,time=4::" # ExmAln.5.LocalRealignment.sh - 8 or 12 cores (depending on cluster) 
 #export RemergeAlloc="mem=1G,time=10::" # ExmAln.6.MergeBam.sh
 #export BQSRAlloc="mem=2G,time=24::" # ExmAln.7.RecalibrateBaseQuality.sh - 8 or 12 cores (depending on cluster) 
-export GenBQSRAlloc="mem=2G,time=8::" # ExmAln.7.RecalibrateBaseQuality.sh - 8 or 12 cores (depending on cluster) 
-export AppBQSRAlloc="mem=2G,time=1::" # ExmAln.7.RecalibrateBaseQuality.sh - 8 or 12 cores (depending on cluster) 
+export GenBQSRAlloc="mem=2G,time=12::" # ExmAln.7.RecalibrateBaseQuality.sh - 8 or 12 cores (depending on cluster) 
+export AppBQSRAlloc="mem=2G,time=6::" # ExmAln.7.RecalibrateBaseQuality.sh - 8 or 12 cores (depending on cluster) 
 export AnaCovAlloc="mem=2G,time=36::" # ExmAln.7a.ExmAln.7a.AnalyseCovariation.sh- 8 or 12 cores (depending on cluster)
-export RRAlloc="mem=10G,time=2::" # ExmAln.8.ReduceReads.sh
-export DepofCovAlloc="mem=2G,time=6::" # ExmAln.9.DepthofCoverage.sh - 8 or 12 cores (depending on cluster) 
+export RRAlloc="mem=10G,time=6::" # ExmAln.8.ReduceReads.sh
+export DepofCovAlloc="mem=2G,time=14::" # ExmAln.9.DepthofCoverage.sh - 8 or 12 cores (depending on cluster) 
 #Variant Calling
 export vcHapCExmAlloc="mem=2G,time=18::" # ExmVC.2.HaplotypeCaller.sh - 8 or 12 cores (depending on cluster) 
 export vcUniGExmAlloc="mem=2G,time=12::" # ExmVC.2.HaplotypeCaller.sh - 8 or 12 cores (depending on cluster) 
