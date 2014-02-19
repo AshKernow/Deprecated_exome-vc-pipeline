@@ -24,10 +24,15 @@ echo "Job ID: "$JOB_ID >> $LogFil
 JobNm=${JOB_NAME#*.}
 TmpDir=$JobNm.VQSR 
 mkdir -p $TmpDir
+HapChec=$(head -n20 $VcfFil.vcf | grep "HaplotypeCaller" | wc -l) #check which VC tool was used
+if [[ $HapChec -eq 1 ]]; then
+	InfoFields="-an DP -an QD -an FS -an MQRankSum -an ReadPosRankSum"
+else
+	InfoFields="-an DP -an QD -an FS -an MQRankSum -an ReadPosRankSum -an HaplotypeScore"
+fi
 
 ##Build the SNP recalibration model
 echo "- Build the SNP recalibration model with GATK VariantRecalibrator `date` ..." >> $LogFil
-InfoFields="-an DP -an QD -an FS -an MQRankSum -an ReadPosRankSum -an HaplotypeScore"
 
 cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T VariantRecalibrator -R $REF -input $VcfFil.vcf     -resource:hapmap,known=false,training=true,truth=true,prior=15.0 $HpMpV3 -resource:omni,known=false,training=true,truth=true,prior=12.0 $TGVCF -resource:1000G,known=false,training=true,truth=false,prior=10.0 $OneKG -resource:dbsnp,known=true,training=false,truth=false,prior=2.0 $DBSNP $InfoFields -mode SNP -tranche 100.0 -tranche 99.9 -tranche 99.0 -tranche 90.0 -recalFile $VcfFil.recalibrate_SNP.recal -tranchesFile $VcfFil.recalibrate_SNP.tranches -rscriptFile recalibrate_SNP_plots.R -nt $NumCores"
 echo $cmd >> $LogFil
@@ -103,3 +108,4 @@ echo "End Variant Quality Score Recalibration $0:`date`" >> $LogFil
 qstat -j $JOB_ID | grep -E "usage " >> $LogFil
 echo "===========================================================================================" >> $LogFil
 echo "" >> $LogFil
+rm $TmpDir
