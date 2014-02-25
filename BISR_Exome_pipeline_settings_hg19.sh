@@ -18,16 +18,16 @@ export ANNDIR="/ifs/home/c2b2/af_lab/ads2202/scratch/src/annovar"
 export PATH="$MYSRC/samtools-0.1.19:$PATH"
 
 ## References
-export DBSNP="$EXOMRES/b37/dbsnp_137.b37.vcf" # dbSNP vcf from GATK
-export INDEL="$EXOMRES/b37/Mills_and_1000G_gold_standard.indels.b37.vcf" # Gold standard INDEL reference from GATK
-export INDEL1KG="$EXOMRES/b37/1000G_phase1.indels.b37.vcf" # INDEL reference from 1000 genomes
-export REF="$EXOMRES/b37/human_g1k_v37.fasta" # human 1000 genome assembly from GATK
-export HpMpV3="$EXOMRES/b37/hapmap_3.3.b37.vcf" # hapmap vcf from GATK
-export TGVCF="$EXOMRES/b37/1000G_omni2.5.b37.vcf" 
-export OneKG="$EXOMRES/b37/1000G_phase1.snps.high_confidence.b37.vcf" # 1000 genome SNPs vcf
+export DBSNP="$EXOMRES/hg19/dbsnp_137.hg19.vcf" # dbSNP vcf from GATK
+export INDEL="$EXOMRES/hg19/Mills_and_1000G_gold_standard.indels.hg19.vcf" # Gold standard INDEL reference from GATK
+export INDEL1KG="$EXOMRES/hg19/1000G_phase1.indels.hg19.vcf" # INDEL reference from 1000 genomes
+export REF="$EXOMRES/hg19/ucsc.hg19.fasta" # UCSC hg19 genome assembly from GATK
+export HpMpV3="$EXOMRES/hg19/hapmap_3.3.hg19.vcf" # hapmap vcf from GATK
+export TGVCF="$EXOMRES/hg19/1000G_omni2.5.hg19.vcf" 
+export OneKG="$EXOMRES/hg19/1000G_phase1.snps.high_confidence.hg19.vcf" # 1000 genome SNPs vcf
 export TARGET="$EXOMRES/SureSelect_Human_All_Exon_V5_UTRs_Covered.orderandbuffered.bed" # Exome capture targets
-export STHSH="$EXOMRES/b37/stampy_b37" # hash file for Stampy - omit ".sthash" extension for compatibility with Stampy
-export STIDX="$EXOMRES/b37/stampy_b37" # genome index file for Stampy - omit ".stidx" extension for compatibility with Stampy
+#export STHSH="$EXOMRES/hg19/stampy_hg19" # hash file for Stampy - omit ".sthash" extension for compatibility with Stampy
+#export STIDX="$EXOMRES/hg19/stampy_hg19" # genome index file for Stampy - omit ".stidx" extension for compatibility with Stampy
 export VCFAnnovarHeader="$EXOMSCR/VCF_header_INFO_for_ANNOVAR.txt"
 ## Hard resource limits for ExomeAnalysis pipeline jobs
 #Number of cores dependent on Cluster
