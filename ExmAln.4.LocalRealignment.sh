@@ -26,7 +26,9 @@ TmpDir=$BamFil.$Chr.Realignjavdir #java temp directory
 mkdir -p $TmpDir
 RalDir=realign.$BamFil #directory to collect individual chromosome realignments
 mkdir -p $RalDir
-StatFil=$JOB_ID.LocReal.stat #Status file to check if all chromosome are complete
+StatDir=$JOB_ID.LocReal.stat 
+mkdir -p $StatDir
+StatFil=$StatDir/$Chr.$JOB_ID.LocReal.stat #Status file to check if all chromosome are complete
 TgtFil=$RalDir/$BamFil.$Chr.target_intervals.list
 
 #Start Log
@@ -85,10 +87,9 @@ if [[ $ChaIn = "chain" ]]; then
 	echo " Min:Sec past hour " `date +%M:%S` >> $TmpLog
 	echo " Sleeping for "$WaitTime" seconds..." >> $TmpLog
 	sleep $WaitTime
-	#send marker to status file
-	echo $CHR >> $StatFil
+	echo `date` $CHR > $StatFil #send marker to status file
 	#count markers in status file and if equals 24 call merge job
-	ralfin=$(cat $StatFil | wc -l)
+	ralfin=$(ls $StatDir | wc -l)
 	if [ $ralfin -eq 24 ]; then
 		echo " All realigns complete at `date`" >> $TmpLog
 		echo "- Call Base Quality Score Recalibration with GATK `date`:" >> $TmpLog
@@ -114,6 +115,7 @@ cat $TmpLog >> $LogFil
 
 #remove temporary files
 if [ $ralfin -eq 24 ]; then
-    rm $StatFil
+    echo HELLO
+	#rm -r $StatDir
 fi
 rm -r $TmpLog $TmpDir $TgtFil
