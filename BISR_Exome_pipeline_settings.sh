@@ -7,7 +7,7 @@ export MYSRC="/ifs/home/c2b2/af_lab/ads2202/scratch/src" # Directory containing 
 export FASTQC="$MYBIN/FastQC/fastqc" #FASTQC perl script
 export GATKJAR="$MYSRC/GenomeAnalysisTK_Current/GenomeAnalysisTK.jar" # GATK jar file
 export JAVA7BIN="$MYBIN/jre1.7.0_40/bin/java" # java 7 binary
-export BWA="$MYSRC/bwa-0.7.5a/bwa" # bwa
+export BWA="$MYSRC/bwa-0.7.7/bwa" # bwa
 export SAMTOOLS="$MYSRC/samtools-0.1.19/samtools" # samtools 
 export PICARD="$MYSRC/picard-tools-1.101" # picard
 export VCFTOOLS="$MYSRC/vcftools_0.1.11/bin/" #vcftools
@@ -18,6 +18,7 @@ export ANNDIR="/ifs/home/c2b2/af_lab/ads2202/scratch/src/annovar"
 export PATH="$MYSRC/samtools-0.1.19:$PATH"
 
 ## References
+export BUILD="b37" # shorthand for build
 export DBSNP="$EXOMRES/b37/dbsnp_137.b37.vcf" # dbSNP vcf from GATK
 export INDEL="$EXOMRES/b37/Mills_and_1000G_gold_standard.indels.b37.vcf" # Gold standard INDEL reference from GATK
 export INDEL1KG="$EXOMRES/b37/1000G_phase1.indels.b37.vcf" # INDEL reference from 1000 genomes
