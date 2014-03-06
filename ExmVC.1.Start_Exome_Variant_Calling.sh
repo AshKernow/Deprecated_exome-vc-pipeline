@@ -39,7 +39,7 @@ BLext=${BamLst##*.}
 if [[ $BLext != "list" ]]; then
 	echo "Appending \".list\" to the BAM list filename for compatability with GATK."
 	echo "----------------------------------------------------------------"
-	cp $BamLst $BamLst.list
+	mv $BamLst $BamLst.list
 	BamLst=$BamLst.list
 fi
 echo ""
