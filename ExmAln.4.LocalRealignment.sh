@@ -20,6 +20,9 @@ done
 Chr=$SGE_TASK_ID
 Chr=${Chr/23/X}
 Chr=${Chr/24/Y}
+if [[ "$BUILD" = "hg19" ]]; then
+	Chr=chr$Chr
+fi
 TmpLog=$LogFil.LocReal.$Chr.log
 JobNm=${JOB_NAME#*.}
 TmpDir=$BamFil.$Chr.Realignjavdir #java temp directory
