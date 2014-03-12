@@ -3,13 +3,16 @@
 
 ChaIn="no"
 
-while getopts i:b:s:l:c: opt; do
+AllowMisencoded="false"
+
+while getopts i:b:s:l:c:A opt; do
   case "$opt" in
       i) BamFil="$OPTARG";;
 	  b) BamLst="$OPTARG";;
       s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
 	  c) ChaIn="$OPTARG";;
+	  A) AllowMisencoded="true";;
   esac
 done
 
@@ -46,6 +49,7 @@ echo "----------------------------------------------------------------" >> $TmpL
 #Generate target file
 echo "- Create target interval file using GATK RealignerTargetCreator `date`..." >> $TmpLog
 cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T RealignerTargetCreator -R $REF -I $BamLst -L $Chr -known $INDEL -known $INDEL1KG -o $TgtFil -nt $NumCores"
+if [[ $AllowMisencoded="true" ]]; then cmd=$cmd" -allowPotentiallyMisencodedQuals"; fi
 echo "    "$cmd >> $TmpLog
 $cmd
 if [[ $? == 1 ]]; then
@@ -58,8 +62,9 @@ fi
 #Realign InDels
 realignedFile=$RalDir/realigned.$BamFil.Chr_$Chr.bam
 echo "- Realign InDels file using GATK IndelRealigner `date`..." >> $TmpLog
-cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T IndelRealigner -R $REF -I $BamLst -targetIntervals $TgtFil -L $Chr -known $INDEL -known $INDEL1KG -o $realignedFile"
+cmd="$JAVA7BIN -Xmx7G -Djava.io.tmpdir=$TmpDir -jar $GATKJAR -T IndelRealigner -R $REF -I $BamLst -targetIntervals $TgtFil -L $Chr -known $INDEL -known $INDEL1KG -o $realignedFile -allowPotentiallyMisencodedQuals"
 echo "    "$cmd >> $TmpLog
+if [[ $AllowMisencoded="true" ]]; then cmd=$cmd" -allowPotentiallyMisencodedQuals"; fi
 $cmd
 if [[ $? == 1 ]]; then
 	echo "----------------------------------------------------------------" >> $TmpLog
