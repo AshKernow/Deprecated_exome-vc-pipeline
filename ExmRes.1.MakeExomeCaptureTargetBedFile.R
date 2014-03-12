@@ -3,9 +3,11 @@ options(scipen=1000)
 
 bufsize <- 50
 
-exon <- read.table("SureSelect_Human_All_Exon_V5_UTRs_Covered.bed", skip=2)
+exon <- read.table("SureSelect_Human_All_Exon_V4_UTRs_Covered.bed", skip=2)
 exon.keep <- exon
 exon <- exon.keep[,1:3]
+#remove unwanted
+exon <- exon[grep("_", exon[,1], invert=T),]
 #remove "chr"
 exon[,1] <- gsub("chr", "", exon[,1])
 CHR <- as.numeric(gsub("X", 23, gsub("Y", 24, exon[,1])))
@@ -40,7 +42,9 @@ for(i in 1:24){
   chec[i,2] <- sum(new.exon[new.exon[,1]==chr,3]-new.exon[new.exon[,1]==chr,2])
 }
 
-write.table(new.exon, "SureSelect_Human_All_Exon_V5_UTRs_Covered.orderandbuffered.bed", quote=F, col.names=F, row.names=F, sep="\t")
+write.table(new.exon, "SureSelect_Human_All_Exon_V4_UTRs_Covered.orderandbuffered_b37.bed", quote=F, col.names=F, row.names=F, sep="\t")
+new.exon[,1] <- paste("chr", new.exon[,1], sep="")
+write.table(new.exon, "SureSelect_Human_All_Exon_V4_UTRs_Covered.orderandbuffered_hg19.bed", quote=F, col.names=F, row.names=F, sep="\t")
 
 
 
