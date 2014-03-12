@@ -20,9 +20,12 @@ done
 #Set local variables
 JobNm=${JOB_NAME#*.}
 Chr=$SGE_TASK_ID
-TmpDir=$BamFil.appBQSR.$Chr
 Chr=${Chr/23/X}
 Chr=${Chr/24/Y}
+TmpDir=$BamFil.appBQSR.$Chr
+if [[ "$BUILD" = "hg19" ]]; then
+	Chr=chr$Chr
+fi
 TmpLog=$LogFil.recal.$Chr.log
 mkdir -p $TmpDir
 RclDir=recal.$BamFil #directory for individual chromosome recalibration files
@@ -51,8 +54,11 @@ echo "    "$cmd >> $TmpLog
 $cmd
 if [[ $? == 1 ]]; then
 	echo "----------------------------------------------------------------" >> $TmpLog
-    echo "Apply recalibration data file using GATK PrintReads failed `date`" >> $TmpLog
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" >> $TmpLog
+	echo "Apply recalibration data file using GATK PrintReads failed `date`" >> $TmpLog
 	qstat -j $JOB_ID | grep -E "usage *$SGE_TASK_ID:" >> $TmpLog
+	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" >> $TmpLog
+	echo "=================================================================" >> $TmpLog
 	cat $TmpLog >> $LogFil
     exit 1
 fi
@@ -67,8 +73,7 @@ if [[ $ChaIn = "chain" ]]; then
 	Minnits=$((Minnits%4))
 	Minnits=$((Minnits*60))
 	Sekunds=$((Sekunds+Minnits))
-	Chr=${Chr/X/23}
-	Chr=${Chr/Y/24}
+	Chr=$SGE_TASK_ID
 	GoTime=$((Chr-1))
 	GoTime=$((GoTime*10))
 	WaitTime=$((GoTime-Sekunds))
