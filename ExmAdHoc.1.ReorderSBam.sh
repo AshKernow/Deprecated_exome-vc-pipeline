@@ -62,4 +62,4 @@ qstat -j $JOB_ID | grep -E "usage" >> $TmpLog
 echo "===========================================================================================" >> $TmpLog
 echo "" >> $TmpLog
 cat $TmpLog >> $LogFil
-#rm -r $TmpDir $TmpLog
+rm -r $TmpDir $TmpLog

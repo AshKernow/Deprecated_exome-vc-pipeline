@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -l mem=8G,time=2:: -N GetMetricsSB -cwd
+#$ -l mem=8G,time=4:: -N GetMetricsSB -cwd
 
 #Provide a settings file containing the following variables:
 # REF - Reference sequence fasta file
@@ -53,4 +53,4 @@ qstat -j $JOB_ID | grep -E "usage" >> $TmpLog
 echo "===========================================================================================" >> $TmpLog
 echo "" >> $TmpLog
 cat $TmpLog >> $LogFil
-#rm -r $TmpDir $TmpLog
+rm -r $TmpDir $TmpLog
