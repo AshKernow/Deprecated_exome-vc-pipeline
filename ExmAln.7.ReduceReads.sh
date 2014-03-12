@@ -23,6 +23,8 @@ JobNm=${JOB_NAME#*.}
 TmpLog=$LogFil.RR.log
 AllBamsDir=$(readlink -f ../$JobNm"_all_recalibrated_bams")
 RrBamsDir=$(readlink -f ../$JobNm"_all_RR_bams")
+mkdir -p $AllBamsDir
+mkdir -p $RrBamsDir
 BamFilMrg=$AllBamsDir/$BamFil.recal
 BamFilRr=$RrBamsDir/$BamFil.recal.RR
 #RclFils=$BamFil.recalibratedfile.list
