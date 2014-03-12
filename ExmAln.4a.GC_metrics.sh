@@ -34,7 +34,19 @@ echo "- Get Insert Size Metrics with Picard `date`..." >> $TmpLog
 cmd="$JAVA7BIN -Xmx4G -Djava.io.tmpdir=$TmpDir -jar $PICARD/CollectInsertSizeMetrics.jar INPUT=$BamFil.bam  OUTPUT=$BamFil.InsertSize_detail HISTOGRAM_FILE=$BamFil.InsertSize.pdf VALIDATION_STRINGENCY=SILENT"
 echo "    "$cmd >> $TmpLog
 $cmd
+#Quality Score Distribution
+echo "- Get Quality Score Distribution from BAM file using PICARD `date`..." >> $TmpLog
+cmd="$JAVA7BIN -Xmx4G -Djava.io.tmpdir=$TmpDir -jar $PICARD/QualityScoreDistribution.jar CHART_OUTPUT=$BamFil.QualityScoreDistr.pdf INPUT=$BamFil OUTPUT=$BamFil REFERENCE_SEQUENCE=$REF"
+echo "    "$cmd >> $TmpLog
+$cmd
+if [[ $? == 1 ]]; then
+	echo "----------------------------------------------------------------" >> $TmpLog
+    echo "Get Quality Score Distribution from  SAM/BAM using PICARD failed `date`" >> $TmpLog
+	qstat -j $JOB_ID | grep -E "usage" >> $TmpLog
+    exit 1
+fi
 echo "----------------------------------------------------------------" >> $TmpLog
+
 
 #End Log
 echo "End Get GC metrics with Picard $0:`date`" >> $TmpLog
