@@ -67,11 +67,11 @@ else
 fi
 echo "----------------------------------------------------------------"
 #Global settings
-read -e -p "Global settings files [BISR_Exome_pipeline_settings]: " Settings
+read -e -p "Global settings files [Exome_pipeline_settings_Agilent_SureSelect_All_Exon_V4_b37]: " Settings
 echo "----------------------------------------------------------------"
 if [ ! "$Settings" ]; then
-	echo "   Using BISR_Exome_pipeline_settings"
-	Settings="/ifs/home/c2b2/af_lab/ads2202/scratch/Exome_Seq/scripts/BISR_pipeline_scripts/BISR_Exome_pipeline_settings.sh"
+	echo "   Using Exome_pipeline_settings_Agilent_SureSelect_All_Exon_V4_b37"
+	Settings="/ifs/home/c2b2/af_lab/ads2202/scratch/Exome_Seq/scripts/Exome_pipeline_scripts/Exome_pipeline_settings_Agilent_SureSelect_All_Exon_V4_b37.sh"
 	echo "----------------------------------------------------------------"
 fi
 if [ ! -f $Settings ]; then

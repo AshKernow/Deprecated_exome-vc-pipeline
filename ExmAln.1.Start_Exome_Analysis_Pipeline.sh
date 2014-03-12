@@ -99,11 +99,11 @@ else #if all fastq files were found
 fi
 echo "----------------------------------------------------------------"
 #Global settings
-read -e -p "Global settings files [BISR_Exome_pipeline_settings]: " Settings
+read -e -p "Global settings files [Exome_pipeline_settings_Agilent_SureSelect_All_Exon_V4_b37]: " Settings
 echo "----------------------------------------------------------------"
 if [ ! "$Settings" ]; then #if no input use default global settings file
 	echo "   Using BISR_Exome_pipeline_settings"
-	Settings="/ifs/home/c2b2/af_lab/ads2202/scratch/Exome_Seq/scripts/BISR_pipeline_scripts/BISR_Exome_pipeline_settings.sh"
+	Settings="/ifs/home/c2b2/af_lab/ads2202/scratch/Exome_Seq/scripts/Exome_pipeline_scripts/Exome_pipeline_settings_Agilent_SureSelect_All_Exon_V4_b37.sh"
 	echo "----------------------------------------------------------------"
 fi
 if [ ! -f $Settings ]; then #check the global settings file exists
