@@ -3,9 +3,11 @@
 
 ChaIn="no"
 
+#This is some testing
+
 while getopts i:s:l:c: opt; do
   case "$opt" in
-      i) BamFil="$OPTARG";;
+      i) BamFile="$OPTARG";;
       s) Settings="$OPTARG";;
       l) LogFil="$OPTARG";;
 	  c) ChaIn="$OPTARG";;
