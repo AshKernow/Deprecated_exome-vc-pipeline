@@ -1,4 +1,5 @@
 #File contains details of annotations to be added by ANNOVAR
+# New line
 #Columns are as follow:
 #<ANNOVAR output column name> <VCF INFO ID tag> <VCF meta-information line>
 Func.refGene	function	##INFO=<ID=function,Number=1,Type=String,Description="Function">
